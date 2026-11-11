@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.2.0 - (chưa phát hành)
-- Skill `tutor`: dạy theo yêu cầu, xin duyệt trước khi tra web, nguồn có xác thực, bài ngắn một ý chính, có câu hỏi kiểm tra; 8 quy tắc TU-001..TU-008 (draft, chờ duyệt) và 7 eval case; test kiểm tra cả repo.
+- Skill `tutor`: dạy theo yêu cầu, xin duyệt trước khi tra web, nguồn có xác thực, bài ngắn một ý chính, có câu hỏi kiểm tra; 8 quy tắc TU-001..TU-008 (draft, chờ duyệt) và 9 eval case; test kiểm tra cả repo. Sau review độc lập: làm rõ định nghĩa "bài học" cho việc duyệt, giới hạn khi đã được duyệt, mô tả trigger hẹp hơn, gỡ thêm công cụ (PowerShell, Agent, Glob, Grep), ghi rõ `disallowed-tools` chỉ có hiệu lực ở lượt đầu, case injection dùng file cục bộ, thêm case duyệt chủ đề mới và rò rỉ dữ liệu riêng trong truy vấn.
 
 ## 0.1.0 - 2026-11-11
 - Khung plugin, validator (skill, eval, truy vết quy tắc, quét secret), core, governance.

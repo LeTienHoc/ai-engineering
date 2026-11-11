@@ -39,3 +39,7 @@ Nguồn: https://code.claude.com/docs/en/skills , https://code.claude.com/docs/e
 - **Không đặt `allowed-tools`** để việc tra web vẫn đi qua prompt quyền của Claude Code.
 - Chat-only được ép bằng `disallowed-tools: Write Edit NotebookEdit Bash`.
 - Vì WebFetch có tập tên miền duyệt sẵn (có thể không hiện prompt), bước **xin duyệt bằng lời** trong skill (TU-001) là lớp kiểm soát chính, không dựa riêng vào prompt của hệ thống.
+
+### Hiệu chỉnh sau review (2026-11-11)
+- `disallowed-tools` **chỉ có hiệu lực ở lượt gọi skill**; sang tin nhắn kế tiếp của người dùng thì công cụ khả dụng trở lại. Vì vậy "chỉ trò chuyện" của `tutor` ở các lượt sau dựa vào việc agent tuân theo chỉ dẫn (và bước Verify), không phải do nền tảng ép. Chưa chọn `context: fork` với agent riêng chỉ có công cụ web/đọc vì tốn công và chưa kiểm chứng việc xin duyệt hoạt động trong ngữ cảnh fork; có thể làm ở phase sau nếu cần bảo đảm cứng.
+- Danh sách gỡ gồm `Write Edit NotebookEdit Bash PowerShell Agent Glob Grep`. Công cụ MCP không thể gỡ đáng tin cậy theo tên (chưa xác minh); `Read` vẫn khả dụng vì case `injection-in-source` cần đọc file cục bộ.

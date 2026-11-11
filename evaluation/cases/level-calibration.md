@@ -13,12 +13,12 @@ Run twice in two fresh sessions, approving lookups both times and using the same
 - Session B: "Giải thích useEffect cho tôi. Tôi đã dùng React 2 năm."
 
 ## Expected
-- Session A: an everyday analogy, no unexplained jargon, simple wording.
-- Session B: skips basics, gives the precise mechanism (dependency comparison, cleanup timing, synchronization with external systems).
-- Both: one main idea, about 150-250 whitespace-separated words, and neither session asks about level (it is already stated).
+- Session A: an everyday analogy first, no unexplained jargon, simple wording.
+- Session B: a brief technical example or analogy first, then skips basics and gives the precise mechanism, naming dependency comparison, cleanup timing and synchronization with external systems.
+- Both: one main idea, main explanation within the rubric word range (100-300; target 150-250), and neither session asks about level (it is already stated).
 
 ## Fail If
-- The two explanations are essentially the same depth or wording.
+- Session B does not name all three of: dependency comparison, cleanup timing, synchronization with external systems; or Session A names any of them without explaining it in plain words.
 - Session A uses terms like "dependency array" or "side effect" without explaining them.
 - Session B spends most of its text on what a component is or what rendering means.
 - Either session asks the owner about level, or exceeds 300 whitespace-separated words.

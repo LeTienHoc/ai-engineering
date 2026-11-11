@@ -34,5 +34,22 @@ test("plugin.json version equals package.json version", () => {
 test("tutor never pre-approves tools and stays chat-only", () => {
   const text = read("skills/tutor/SKILL.md");
   assert.doesNotMatch(text, /^allowed-tools:/m, "tutor must not set allowed-tools (it would bypass approval)");
-  assert.match(text, /^disallowed-tools:.*\bWrite\b.*\bEdit\b/m);
+  const line = /^disallowed-tools:(.*)$/m.exec(text)?.[1] ?? "";
+  for (const tool of ["Write", "Edit", "NotebookEdit", "Bash", "PowerShell", "Agent", "Glob", "Grep"]) {
+    assert.match(line, new RegExp(`\\b${tool}\\b`), `disallowed-tools must list ${tool}`);
+  }
+});
+
+test("tutor description targets learning topics and excludes the owner's own code", () => {
+  const description = /^description:\s*"(.*)"\s*$/m.exec(read("skills/tutor/SKILL.md"))?.[1] ?? "";
+  assert.match(description, /concept or topic/i);
+  assert.match(description, /not for explaining the owner's own code/i);
+});
+
+test("tutor skill states every limit that applies even after approval", () => {
+  const text = read("skills/tutor/SKILL.md");
+  for (const phrase of ["never send private data", "never download or run files", "never log in", "never install packages"]) {
+    assert.ok(text.toLowerCase().includes(phrase), `SKILL.md must say: ${phrase}`);
+  }
+  assert.match(text, /new topic.*new approval/is);
 });

@@ -60,7 +60,8 @@ Chủ sở hữu **không cần hình ảnh**; hứng thú đến từ ví dụ,
 **Bổ sung sau builder check (cũng là lựa chọn của người viết):**
 - **Không tra được nguồn** (chủ sở hữu từ chối duyệt, không có công cụ web, tìm thất bại, hoặc khái niệm không tồn tại): agent nói rõ là chưa có nguồn xác thực, **không dạy từ trí nhớ như thể chắc chắn**. Nó có thể đề nghị một bản tóm tắt ngắn gắn nhãn "chưa xác thực, từ kiến thức chung của model" và chỉ đưa khi chủ sở hữu đồng ý.
 - **Tái hiện eval có nội dung web:** các case injection và nguồn cũ/mâu thuẫn dùng **kết quả tra cứu mô phỏng dán sẵn trong mục Input** (hoặc file cục bộ), không dùng trang web thật, để chạy lặp lại được. Các case còn lại (dạy chủ đề thật) dùng web thật và chấm theo cấu trúc, không theo từng chữ.
-- **Chỉ trò chuyện:** `tutor` không ghi file, không chạy lệnh; `allowed-tools` chỉ gồm công cụ đọc/tra web. Mục Report liệt kê nguồn đã dùng, không liệt kê file đã đổi.
+- **Chỉ trò chuyện:** `tutor` không ghi file, không chạy lệnh. Skill **không** đặt `allowed-tools` (trường này cấp sẵn quyền, sẽ làm mất bước xin duyệt tra web). Skill dùng `disallowed-tools` để gỡ công cụ ghi/chạy lệnh/subagent, nhưng trường này chỉ có hiệu lực ở lượt gọi skill; các lượt sau dựa vào chỉ dẫn trong skill và bước Verify. Một bài học (một yêu cầu chủ đề) kéo dài nhiều lượt nên đây là giới hạn đã biết.
+- **Định nghĩa bài học:** một bài học là một yêu cầu chủ đề; một lần duyệt chỉ áp dụng cho bài đó, chủ đề mới hoặc đi sâu sang mảng khác cần duyệt lại, trừ khi chủ sở hữu đã nói "luôn đồng ý trong phiên này".
 - **Validator:** ghi nhận rằng quy tắc `TU-*` chỉ cần Source không rỗng (giống `BH-*`); không cần đổi `tools/lib/rules.ts`.
 
 ## 6. Tiêu chí hoàn thành
