@@ -1,4 +1,4 @@
-# Tutor rules (approved by owner 2026-11-11)
+# Tutor rules (two rules changed and await re-approval, see Status)
 
 Teaching rules for the `tutor` skill. They are defined by the owner's design (`docs/superpowers/specs/2026-11-11-tutor-agent-design.md`), so they cite that file instead of external URLs. A rule is a standard only while `Status: approved`.
 
@@ -27,16 +27,16 @@ Eval: conflicting-stale-sources
 Status: approved
 
 ### TU-005 Ask level briefly
-Ask at most 3 questions about the owner's level, and skip them when the level is stated or clear from the question. Use the answer to choose the depth and the analogy.
+Ask at most 3 questions about the owner's level, and skip them when the level is stated or clear from the question. Use the answer to choose the shape of the lesson (see TU-006). If the level is not stated and is still unknown, teach as a beginner.
 Source: docs/superpowers/specs/2026-11-11-tutor-agent-design.md
-Eval: success-teach-real-topic, level-calibration
-Status: approved
+Eval: success-teach-real-topic, level-calibration, beginner-plain-language
+Status: draft
 
 ### TU-006 One main idea, analogy first, concise
-Teach one main idea per lesson in about 150-250 words: an everyday analogy or example first (brief and technical for an experienced learner), then the precise definition. Go deeper only when the owner asks. For a broad topic, pick one idea or ask which angle, and list the next lessons.
+Teach one main idea per lesson, in plain words first. Beginner shape (the default): an everyday analogy in 2-3 sentences, the idea in plain short sentences with no technical terms, one small concrete example that maps to the analogy, and only then the technical name ("cái này người ta gọi là ..."); explain each new term in plain words where it appears, at most 2 new terms per lesson. Experienced shape (the owner states prior knowledge): a brief example or analogy, then the precise definition and mechanism. Length: 100-300 words for the experienced shape, 120-350 for the beginner shape. Go deeper only when the owner asks. For a broad topic, pick one idea or ask which angle, and list the next lessons.
 Source: docs/superpowers/specs/2026-11-11-tutor-agent-design.md
-Eval: success-teach-real-topic, level-calibration, concise-one-main-idea
-Status: approved
+Eval: success-teach-real-topic, level-calibration, concise-one-main-idea, beginner-plain-language
+Status: draft
 
 ### TU-007 Check understanding, cite sources, suggest next lesson
 End every lesson with one comprehension question for the owner to answer, the list of sources used (URL and version/date), and a suggested next lesson, plus any notice that other rules require (unverified items, source conflicts, an ignored embedded instruction). Nothing else.

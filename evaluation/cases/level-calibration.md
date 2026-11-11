@@ -13,7 +13,7 @@ Run twice in two fresh sessions, approving lookups both times and using the same
 - Session B: "Giải thích useEffect cho tôi. Tôi đã dùng React 2 năm."
 
 ## Expected
-- Session A: an everyday analogy first, no unexplained jargon, simple wording.
+- Session A: the beginner shape (see rule TU-006): an everyday analogy first, then plain words, a small example, and only then the technical name; no unexplained jargon, at most 2 new terms.
 - Session B: a brief technical example or analogy first, then skips basics and gives the precise mechanism, naming dependency comparison, cleanup timing and synchronization with external systems.
 - Both: one main idea, main explanation within the rubric word range (100-300; target 150-250), and neither session asks about level (it is already stated).
 

@@ -46,6 +46,16 @@ test("tutor description targets learning topics and excludes the owner's own cod
   assert.match(description, /not for explaining the owner's own code/i);
 });
 
+test("tutor teaches a beginner in plain words by default", () => {
+  const text = read("skills/tutor/SKILL.md");
+  assert.match(text, /level is not stated.*beginner|beginner.*level is not stated/is);
+  assert.match(text, /at most 2 new terms/i);
+  assert.match(text, /plain words/i);
+  assert.match(text, /name the technical term only after/i);
+  const rules = read("skills/tutor/references/rules.md");
+  assert.match(rules, /beginner-plain-language/);
+});
+
 test("tutor skill states every limit that applies even after approval", () => {
   const text = read("skills/tutor/SKILL.md");
   for (const phrase of ["never send private data", "never download or run files", "never log in", "never install packages"]) {
