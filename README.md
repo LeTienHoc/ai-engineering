@@ -3,6 +3,8 @@
 Plugin Claude Code cá nhân để xây các AI agent nhất quán, kiểm chứng được. Gồm: lõi chung (hợp đồng, evaluation, governance) và hai agent:
 - **Frontend Architect** (`/ai-engineering:frontend-architect`): làm việc React/Next.js App Router + TypeScript theo quy tắc cố định, hỏi khi thiếu thông tin, kiểm tra trước khi báo xong.
 - **Tutor** (`/ai-engineering:tutor`): dạy bất kỳ chủ đề nào bạn hỏi, mỗi bài một ý chính, có ví dụ trước, có câu hỏi kiểm tra hiểu bài và ghi nguồn. **Xin duyệt trước khi tra web**; không có nguồn xác thực thì nói thẳng, không dạy từ trí nhớ như thể chắc chắn. Chỉ trò chuyện, không ghi file, không nhớ giữa các phiên.
+- **Term feedback** (`/ai-engineering:term-feedback`): khi bạn hỏi nghĩa một từ ("Promise là gì?"), agent giải thích bằng lời thường và ghi từ đó vào sổ từ lạ. Từ riêng của dự án (tên hàm, đường dẫn) được giải thích nhưng **không** ghi vào sổ.
+- **Quality report** (`/ai-engineering:quality-report`): báo cáo chỉ đọc: agent nào làm bạn khó hiểu nhiều nhất, từ nào lặp lại, eval case nào chưa chạy hoặc chỉ đạt không chính thức. Thiếu dữ liệu thì nói rõ, không bao giờ báo "ổn" khi chưa có dữ liệu.
 
 Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans/` (Phase 1: lõi + Frontend Architect; Phase 2: Tutor)
 
@@ -12,6 +14,16 @@ Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans
 - `evaluation/`: eval case, rubric, hướng dẫn chạy (`RUN.md`), kết quả (`results/`).
 - `governance/`: chính sách quyền hạn/secret/chống injection, quy trình phiên bản.
 - `tools/`, `tests/`: validator TypeScript (chạy bằng Node, không cần cài thư viện).
+
+## Theo dõi chất lượng (sổ từ lạ)
+- **Sổ** nằm ở `~/.claude/ai-engineering/unknown-terms.jsonl`, dùng chung cho mọi dự án, nằm trên máy bạn và **không gửi đi đâu**. Mỗi dòng gồm ngày, từ, agent, chủ đề, câu chứa từ (trích từ câu trả lời của agent), nghĩa ngắn. Sổ không chứa bí mật, đường dẫn hay tên dự án.
+- **Chạy một lần** để báo cáo biết repo nguồn ở đâu (ghi một file `config.json` vào thư mục trên): trong thư mục repo chạy `node tools/setup.ts`.
+- **Danh sách hồi quy** `evaluation/known-terms.md`: các từ đã làm bạn khó hiểu; case `no-unexplained-known-terms` kiểm tra agent không dùng chúng mà không giải thích. Từ mới ở trạng thái `proposed` cho tới khi bạn xác nhận.
+- **Bỏ hộp thoại xin quyền khi ghi sổ (tùy chọn, bạn tự làm):** Claude Code mặc định hỏi quyền mỗi lần ghi sổ. Muốn bỏ, thêm quy tắc sau vào `permissions.allow` trong `~/.claude/settings.json` (thay `<tên-người-dùng>` bằng tên người dùng Windows của bạn; quy tắc phải là `Edit(...)`, không phải `Write(...)`):
+  ```
+  "Edit(//c/Users/<tên-người-dùng>/.claude/ai-engineering/unknown-terms.jsonl)"
+  ```
+  Agent không tự sửa file cài đặt của bạn.
 
 ## Cài một lần, dùng mọi dự án
 Yêu cầu: Claude Code, Node 22.18+ (đã kiểm tra với Node 26).

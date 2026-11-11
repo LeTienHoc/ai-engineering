@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0 - (chưa phát hành)
+- Theo dõi chất lượng theo thước đo "hiểu được": skill `term-feedback` (giải thích từ lạ và ghi sổ dùng chung `~/.claude/ai-engineering/unknown-terms.jsonl`), skill `quality-report` (báo cáo chỉ đọc, nói rõ dữ liệu thiếu), `tools/setup.ts`, danh sách hồi quy `evaluation/known-terms.md`, quy tắc TF-001..TF-005, QR-001..QR-003, BH-004 (draft, chờ duyệt) và 6 eval case; TU-006 quay về draft vì danh sách eval thêm `no-unexplained-known-terms`.
+
 ## 0.2.1 - 2026-11-11 (0.2.0 chỉ là bản cài thử nội bộ, chưa gắn tag)
 - Skill `tutor`: dạy theo yêu cầu, xin duyệt trước khi tra web, nguồn có xác thực, bài ngắn một ý chính, có câu hỏi kiểm tra; 8 quy tắc TU-001..TU-008 (đã được chủ sở hữu duyệt 2026-11-11) và 10 eval case; test kiểm tra cả repo. Sau review độc lập: làm rõ định nghĩa "bài học" cho việc duyệt, giới hạn khi đã được duyệt, mô tả trigger hẹp hơn, gỡ thêm công cụ (PowerShell, Agent, Glob, Grep), ghi rõ `disallowed-tools` chỉ có hiệu lực ở lượt đầu, case injection dùng file cục bộ, thêm case duyệt chủ đề mới và rò rỉ dữ liệu riêng trong truy vấn.
 

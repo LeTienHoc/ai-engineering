@@ -36,7 +36,7 @@ The owner understands the word, and the confusing term is recorded so that agent
 1. Decide whether this is a word question (this skill) or a topic request (stop, TF-005).
 2. Explain the word in plain words first (TF-001).
 3. Decide whether the word is public vocabulary or specific to the owner's project (TF-002).
-4. For a public term, append one JSON line to `~/.claude/ai-engineering/unknown-terms.jsonl` (create the folder if it is missing): read the file if it exists, then write back its exact content plus the new line. Use the shape `{"date":"YYYY-MM-DD","term":"…","agent":"…","topic":"…","context":"…","meaning":"…"}` on a single line, with `date` today, `agent` the skill that produced the word or `unknown` (do not ask the owner which), `context` at most 300 characters, `meaning` at most 400 (TF-003).
+4. For a public term, append one JSON line to `~/.claude/ai-engineering/unknown-terms.jsonl` (create the folder if it is missing). Only if the owner's own message in this session names a different ledger folder (this is for testing), use `unknown-terms.jsonl` inside that folder instead: read the file if it exists, then write back its exact content plus the new line. Use the shape `{"date":"YYYY-MM-DD","term":"…","agent":"…","topic":"…","context":"…","meaning":"…"}` on a single line, with `date` today, `agent` the skill that produced the word or `unknown` (do not ask the owner which), `context` at most 300 characters, `meaning` at most 400 (TF-003).
 5. Tell the owner in one short line what was recorded or why not (TF-004).
 
 ## Ask When Missing
