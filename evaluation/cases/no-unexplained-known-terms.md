@@ -13,7 +13,25 @@ Session A (`tutor`): say "Giải thích Suspense trong React cho tôi. Tôi chư
 
 > Simulated lookup results: react.dev "Suspense" reference (React 19.3.0). Suspense lets you display a fallback until its children have finished loading. Props: children, the actual UI you want to render; fallback, an alternate UI to render in place of the actual UI if it has not finished loading. Suspense works with lazy-loaded component code and with data read using use with a Promise. Suspense does not detect data fetched inside an Effect or event handler. All content inside one Suspense boundary is revealed together.
 
-Session B (`frontend-architect`): in a project with a small React file, say "Giải thích cho tôi người mới đoạn code trong `app/page.tsx`", where the file contains a Server Component that awaits a data function and wraps a child in `<Suspense fallback={<p>Đang tải...</p>}>`.
+Session B (`frontend-architect`): in a project whose `app/page.tsx` contains exactly the code below, with the owner level not stated, say "Giải thích cho tôi đoạn code trong app/page.tsx."
+
+```tsx
+import { Suspense } from "react";
+import { getReviews } from "@/lib/reviews";
+
+async function Reviews() {
+  const reviews = await getReviews();
+  return <ul>{reviews.map((r) => <li key={r.id}>{r.text}</li>)}</ul>;
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<p>Đang tải...</p>}>
+      <Reviews />
+    </Suspense>
+  );
+}
+```
 
 ## Expected
 In both sessions, every term from the list that appears in the reply is explained in plain words at its first appearance, before or right where it is used. Terms that do not appear need no explanation.

@@ -11,21 +11,28 @@ export type ReportInput = {
   caseIds: string[];
   results: CaseResult[];
   repoFound: boolean;
+  /** Ledger lines rejected as private data (a subset of ledgerErrors). */
+  ledgerPrivate?: number;
+  /** Files in evaluation/results that could not be read as a result. */
+  unreadableResults?: number;
 };
 
 /** `evaluation/results/YYYY-MM-DD-<case-id>.md` plus its `result:` line; null when the file does not match. */
 export function parseResultFile(fileName: string, text: string): CaseResult | null {
-  const name = /^(\d{4}-\d{2}-\d{2})-(.+)\.md$/.exec(fileName);
+  const name = /^(\d{4}-\d{2}-\d{2})-(.+)\.md$/i.exec(fileName);
   if (!name) return null;
-  const line = /^result:\s*(.+?)\s*$/m.exec(text.replace(/\r\n/g, "\n"));
+  const line = /^\s*\**result:\**\s*(.+?)\s*$/im.exec(text.replace(/\r\n/g, "\n"));
   if (!line) return null;
   return { caseId: name[2], date: name[1], result: line[1] };
 }
 
+/** Only a bare PASS is a formal pass; any qualifier after it (in any language) makes it informal. */
 function statusOf(result: string): string {
-  if (/^FAIL/i.test(result)) return "RỚT";
-  if (/^PASS/i.test(result)) return /informal/i.test(result) ? "đạt không chính thức" : "đạt chính thức";
-  return `kết quả không rõ ("${result}")`;
+  const r = result.trim();
+  if (/^FAIL/i.test(r)) return "RỚT";
+  if (/^PASS$/i.test(r)) return "đạt chính thức";
+  if (/^PASS/i.test(r)) return "đạt không chính thức";
+  return `kết quả không rõ ("${r}")`;
 }
 
 const count = (keys: string[]): [string, number][] => {
@@ -39,18 +46,25 @@ export function buildReport(input: ReportInput): { text: string; sections: Recor
 
   const missing: string[] = [];
   if (!input.repoFound) missing.push("Không tìm thấy repo nguồn; chưa thể đọc eval case và kết quả (đã chạy `node tools/setup.ts` chưa?).");
+  const priv = input.ledgerPrivate ?? 0;
   if (!input.ledgerFound) missing.push("Chưa có sổ từ lạ (không tìm thấy file), nên chưa có dữ liệu về từ gây khó hiểu.");
-  else if (input.entries.length === 0) missing.push("Sổ từ lạ đang trống.");
-  if (input.ledgerErrors > 0) missing.push(`${input.ledgerErrors} dòng trong sổ bị lỗi và đã bị bỏ qua.`);
+  else if (input.entries.length === 0 && input.ledgerErrors === 0) missing.push("Sổ từ lạ đang trống.");
+  else if (input.entries.length === 0) missing.push("Sổ từ lạ không có dòng nào đọc được.");
+  if (priv > 0) missing.push(`${priv} dòng trong sổ có vẻ chứa dữ liệu riêng (đường dẫn hoặc bí mật); hãy mở sổ và xóa các dòng đó.`);
+  if (input.ledgerErrors - priv > 0) missing.push(`${input.ledgerErrors - priv} dòng trong sổ bị lỗi và đã bị bỏ qua.`);
+  if ((input.unreadableResults ?? 0) > 0) {
+    missing.push(`${input.unreadableResults} file kết quả không đọc được (sai tên hoặc thiếu dòng result:) và bị bỏ qua.`);
+  }
   if (input.repoFound && input.results.length === 0) missing.push("Chưa có kết quả eval nào được ghi lại.");
   if (input.repoFound && input.knownTerms.length === 0) {
     missing.push("Danh sách thuật ngữ hồi quy đang trống: case no-unexplained-known-terms chưa chạy được.");
   }
   sections["Dữ liệu thiếu"] = missing.length > 0 ? missing : ["Không có nguồn dữ liệu nào bị thiếu."];
 
-  const known = input.entries.filter((e) => e.agent !== "unknown");
+  const agentOf = (e: Entry) => e.agent.trim().toLowerCase();
+  const known = input.entries.filter((e) => agentOf(e) !== "unknown");
   const unknown = input.entries.length - known.length;
-  sections["Agent gây khó hiểu"] = count(known.map((e) => e.agent)).map(([agent, n]) => `${agent}: ${n}`);
+  sections["Agent gây khó hiểu"] = count(known.map(agentOf)).map(([agent, n]) => `${agent}: ${n}`);
   sections["Không rõ nguồn"] = [`${unknown} mục`];
 
   const byTerm = count(input.entries.map((e) => normalizeTerm(e.term)));

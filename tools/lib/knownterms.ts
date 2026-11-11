@@ -4,7 +4,12 @@ export type KnownTerm = { term: string; meaning: string; status: "proposed" | "c
 
 /** Aggregation key used everywhere a term is compared or counted. */
 export function normalizeTerm(t: string): string {
-  return t.trim().toLowerCase().replace(/\s+/g, " ");
+  return t
+    .normalize("NFKC")
+    .replace(/[​-‍﻿]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
 /** Reads lines of the form `- <term> | <meaning> | <proposed|confirmed>`. */

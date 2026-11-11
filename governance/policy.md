@@ -28,6 +28,6 @@
 - Thay đổi plugin đi qua git và changelog (xem [versioning](versioning.md)).
 
 ## 6. Ngoại lệ đã duyệt
-- Chủ sở hữu đã duyệt (2026-11-11) một ngoại lệ hẹp: skill `term-feedback` được **thêm một dòng** vào đúng file `~/.claude/ai-engineering/unknown-terms.jsonl`. Dòng đó không chứa bí mật, đường dẫn, tên dự án hay dữ liệu riêng.
+- Ngoại lệ hẹp (2026-11-11, chủ sở hữu trả lời "duyệt" cho bản thiết kế; người viết hiểu là đã đồng ý ngoại lệ này, **sẽ được xác nhận lại khi chủ sở hữu duyệt các quy tắc mới**, chờ xác nhận): skill `term-feedback` được **thêm một dòng** vào đúng file `~/.claude/ai-engineering/unknown-terms.jsonl`, không đường dẫn nào khác. Dòng đó không chứa bí mật, đường dẫn, tên dự án hay dữ liệu riêng.
 - Mọi việc ghi khác của `term-feedback`, và mọi việc ghi của agent khác, vẫn theo các mục trên (xin duyệt).
 - Ngoại lệ này không tự bỏ hộp thoại xin quyền của Claude Code. Chủ sở hữu có thể tự thêm quy tắc `Edit(...)` cho đúng file đó vào `settings.json` (xem README); agent không tự sửa file cài đặt.

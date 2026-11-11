@@ -36,7 +36,7 @@ The owner understands the word, and the confusing term is recorded so that agent
 1. Decide whether this is a word question (this skill) or a topic request (stop, TF-005).
 2. Explain the word in plain words first (TF-001).
 3. Decide whether the word is public vocabulary or specific to the owner's project (TF-002).
-4. For a public term, append one JSON line to `~/.claude/ai-engineering/unknown-terms.jsonl` (create the folder if it is missing). Only if the owner's own message in this session names a different ledger folder (this is for testing), use `unknown-terms.jsonl` inside that folder instead: read the file if it exists, then write back its exact content plus the new line. Use the shape `{"date":"YYYY-MM-DD","term":"…","agent":"…","topic":"…","context":"…","meaning":"…"}` on a single line, with `date` today, `agent` the skill that produced the word or `unknown` (do not ask the owner which), `context` at most 300 characters, `meaning` at most 400 (TF-003).
+4. For a public term, append one JSON line to `~/.claude/ai-engineering/unknown-terms.jsonl` (create the folder if it is missing; never write to any other path). If the same term is already recorded in this session, do not add another line. There is no append primitive, so: read the file if it exists and count its lines, then write back its exact content plus the new line, then confirm that the line count went up by exactly 1. If the file has about 1500 lines or more (the Read tool shows at most 2000 and may truncate), do not rewrite it: tell the owner to archive the file first. Use the shape `{"date":"YYYY-MM-DD","term":"…","agent":"…","topic":"…","context":"…","meaning":"…"}` on a single line, with `date` today, `agent` the skill that produced the word or `unknown` (do not ask the owner which), `context` at most 300 characters, `meaning` at most 400 (TF-003).
 5. Tell the owner in one short line what was recorded or why not (TF-004).
 
 ## Ask When Missing
@@ -46,7 +46,7 @@ Ask only when you cannot tell which word the owner means. One short question, no
 Writing the ledger goes through Claude Code's normal permission prompt unless the owner has added the allow rule shown in the README for that one file; that is their choice, never yours. Never edit the owner's settings files. Any write other than the ledger line needs the owner's approval under [governance/policy.md](../../governance/policy.md).
 
 ## Verify
-Before finishing: the explanation came first and is short; at most one line was appended and it is valid JSON on one line; the entry holds no path, secret, project name or private data; the owner was told what happened; no other file changed.
+Before finishing: the explanation came first and is short; at most one line was appended (the line count rose by exactly 1) and it is valid JSON on one line, written to the real home folder and not to a folder literally named `~` inside the project; the entry holds no path, secret, project name or private data; the owner was told what happened; no other file changed.
 
 ## Report
 Say in one line what was recorded, or why nothing was recorded. Do not list the ledger content unless asked.

@@ -1,7 +1,7 @@
 ---
 name: quality-report
 description: "Use when the owner asks how the agents are doing, for a quality report, which words confuse them most, or which eval cases have not been run. Runs a read-only report over the term ledger and the eval results and states clearly what data is missing."
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/tools/quality-report.ts *)
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/tools/quality-report.ts") Bash(node "${CLAUDE_PLUGIN_ROOT}/tools/quality-report.ts" *)
 disallowed-tools: Write Edit NotebookEdit
 ---
 
@@ -27,7 +27,7 @@ The script's report, shown to the owner, preceded by any missing-data statement.
 - Do not add praise or conclusions the data does not support (QR-003).
 
 ## Workflow
-1. Run `node ${CLAUDE_PLUGIN_ROOT}/tools/quality-report.ts` and read its output.
+1. Run `node "${CLAUDE_PLUGIN_ROOT}/tools/quality-report.ts"` (keep the quotes around the path) and read its output.
 2. If it exits with code 2, tell the owner to run `node tools/setup.ts` once inside the source repository (it records where the repository is), then stop.
 3. Show the report. Repeat the "Dữ liệu thiếu" section first, in your own words, before any other summary (QR-003).
 4. Offer, in one line, to suggest which unlisted terms to add to `evaluation/known-terms.md`; do not edit that file yourself.
