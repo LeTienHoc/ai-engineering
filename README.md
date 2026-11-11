@@ -35,7 +35,7 @@ node tools/validate.ts
 Xem `evaluation/RUN.md`. Chạy tay qua Claude Code, không dùng API key.
 
 ## Giới hạn đã biết
-- Quy tắc frontend đang ở trạng thái `draft`, chờ chủ sở hữu duyệt.
+- Bộ quy tắc frontend đã được chủ sở hữu duyệt (2026-11-11); quy tắc mới hoặc sửa đổi bắt đầu ở `draft` cho đến khi được duyệt.
 - Eval chạy tay; chưa gắn hook/CI. Kết quả eval phụ thuộc model nên "nhất quán" được đo bằng rubric (2/3 lần chạy).
 - Chỉ phủ Next.js App Router + TypeScript; Pages Router chỉ được phát hiện và cảnh báo.
 - Một người dùng; không có marketplace công khai hay dashboard.
