@@ -79,3 +79,9 @@ Run the project's own checks, read the real output, and report results truthfull
 Source: core/principles.md
 Eval: success-new-component
 Status: approved
+
+### BH-004 Explain unfamiliar terms
+When the owner's level is not known, any technical term that appears for the first time in a reply is explained in plain words right where it appears. Skip the explanation for a term the owner has shown they know.
+Source: docs/superpowers/specs/2026-11-11-quality-tracking-design.md
+Eval: frontend-explains-new-terms, no-unexplained-known-terms
+Status: draft
