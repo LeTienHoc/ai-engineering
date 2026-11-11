@@ -1,6 +1,6 @@
 {
   "name": "ai-engineering",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Personal AI engineering platform: contract-checked skills, evaluation and governance, starting with a Frontend Architect agent.",
   "author": { "name": "Owner" }
 }

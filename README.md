@@ -1,12 +1,14 @@
 # ai-engineering
 
-Plugin Claude Code cá nhân để xây các AI agent nhất quán, kiểm chứng được. Phase 1 gồm: lõi chung (hợp đồng, evaluation, governance) và agent mẫu **Frontend Architect** (React/Next.js App Router + TypeScript).
+Plugin Claude Code cá nhân để xây các AI agent nhất quán, kiểm chứng được. Gồm: lõi chung (hợp đồng, evaluation, governance) và hai agent:
+- **Frontend Architect** (`/ai-engineering:frontend-architect`): làm việc React/Next.js App Router + TypeScript theo quy tắc cố định, hỏi khi thiếu thông tin, kiểm tra trước khi báo xong.
+- **Tutor** (`/ai-engineering:tutor`): dạy bất kỳ chủ đề nào bạn hỏi, mỗi bài một ý chính, có ví dụ trước, có câu hỏi kiểm tra hiểu bài và ghi nguồn. **Xin duyệt trước khi tra web**; không có nguồn xác thực thì nói thẳng, không dạy từ trí nhớ như thể chắc chắn. Chỉ trò chuyện, không ghi file, không nhớ giữa các phiên.
 
-Thiết kế: `docs/superpowers/specs/2026-11-11-ai-engineering-platform-design.md` · Kế hoạch: `docs/superpowers/plans/2026-11-11-ai-engineering-platform-phase1.md`
+Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans/` (Phase 1: lõi + Frontend Architect; Phase 2: Tutor)
 
 ## Cấu trúc
 - `core/`: nguyên tắc và các mẫu (skill, eval case, rule), nguồn sự thật duy nhất.
-- `skills/frontend-architect/`: agent mẫu + `references/rules.md` (quy tắc, mỗi quy tắc có nguồn và eval).
+- `skills/frontend-architect/`, `skills/tutor/`: mỗi agent có `SKILL.md` + `references/rules.md` (quy tắc, mỗi quy tắc có nguồn và eval).
 - `evaluation/`: eval case, rubric, hướng dẫn chạy (`RUN.md`), kết quả (`results/`).
 - `governance/`: chính sách quyền hạn/secret/chống injection, quy trình phiên bản.
 - `tools/`, `tests/`: validator TypeScript (chạy bằng Node, không cần cài thư viện).

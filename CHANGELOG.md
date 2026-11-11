@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.0 - (chưa phát hành)
+- Skill `tutor`: dạy theo yêu cầu, xin duyệt trước khi tra web, nguồn có xác thực, bài ngắn một ý chính, có câu hỏi kiểm tra; 8 quy tắc TU-001..TU-008 (draft, chờ duyệt) và 7 eval case; test kiểm tra cả repo.
+
 ## 0.1.0 - 2026-11-11
 - Khung plugin, validator (skill, eval, truy vết quy tắc, quét secret), core, governance.
 - Skill `frontend-architect` với quy tắc FE-001..FE-009 và BH-001..BH-003 (đã được chủ sở hữu duyệt 2026-11-11), 8 eval case, rubric, hướng dẫn chạy, README.
