@@ -16,14 +16,14 @@ Yêu cầu: Claude Code, Node 22.18+ (đã kiểm tra với Node 26).
 
 ```
 claude plugin validate D:\DuAn\ai-enginner
-claude plugin marketplace add D:\DuAn\ai-enginner
+claude plugin marketplace add D:/DuAn/ai-enginner
 claude plugin install ai-engineering@ai-engineering-local
 claude plugin list
 ```
 
 Thử không cần cài: `claude --plugin-dir D:\DuAn\ai-enginner`. Sau khi sửa plugin, chạy `/reload-plugins`. Skill được gọi bằng `/ai-engineering:frontend-architect` hoặc tự kích hoạt khi bạn yêu cầu việc React/Next.js.
 
-> Lưu ý: đường dẫn tuyệt đối Windows cho `marketplace add` chưa được tài liệu xác nhận; nếu lệnh lỗi, thử `cd D:\DuAn` rồi dùng `./ai-enginner`.
+> Đã kiểm tra ngày 2026-11-11 trên Windows: `marketplace add` với đường dẫn tuyệt đối dùng dấu `/` (`D:/DuAn/ai-enginner`) cài thành công ở user scope (`claude plugin list` hiển thị `Scope: user`, enabled).
 
 ## Kiểm tra trước khi commit
 ```
