@@ -6,6 +6,7 @@ import { validateSkill } from "./lib/skill.ts";
 import { caseRules, validateEvalCase } from "./lib/evalcase.ts";
 import { checkCases, checkTraceability, findUnparsedRuleHeadings, parseRules, type CaseRef, type Rule } from "./lib/rules.ts";
 import { scanSecrets } from "./lib/secrets.ts";
+import { parseKnownTerms } from "./lib/knownterms.ts";
 
 const root = resolve(process.env.VALIDATE_ROOT ?? resolve(fileURLToPath(import.meta.url), "..", ".."));
 const SKIP_DIRS = new Set([".git", "node_modules", ".superpowers"]);
@@ -58,6 +59,9 @@ for (const f of all.filter((f) => /^skills\/[^/]+\/references\/rules\.md$/.test(
   allRules.push(...rules);
 }
 if (firstRulesFile || cases.length > 0) report(firstRulesFile ?? join(root, "evaluation", "cases"), checkCases(allRules, cases));
+
+// Regression term list
+for (const f of all.filter((f) => rel(f) === "evaluation/known-terms.md")) report(f, parseKnownTerms(read(f)).issues);
 
 // Secret scan: every text file, including .env*, scripts and test fixtures
 for (const f of all) {
