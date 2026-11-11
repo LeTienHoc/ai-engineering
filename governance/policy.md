@@ -26,3 +26,8 @@
 ## 5. Truy vết
 - Mỗi agent báo cáo cuối phiên: file đã đổi, lệnh đã chạy, kết quả thật, vấn đề tồn đọng.
 - Thay đổi plugin đi qua git và changelog (xem [versioning](versioning.md)).
+
+## 6. Ngoại lệ đã duyệt
+- Chủ sở hữu đã duyệt (2026-11-11) một ngoại lệ hẹp: skill `term-feedback` được **thêm một dòng** vào đúng file `~/.claude/ai-engineering/unknown-terms.jsonl`. Dòng đó không chứa bí mật, đường dẫn, tên dự án hay dữ liệu riêng.
+- Mọi việc ghi khác của `term-feedback`, và mọi việc ghi của agent khác, vẫn theo các mục trên (xin duyệt).
+- Ngoại lệ này không tự bỏ hộp thoại xin quyền của Claude Code. Chủ sở hữu có thể tự thêm quy tắc `Edit(...)` cho đúng file đó vào `settings.json` (xem README); agent không tự sửa file cài đặt.

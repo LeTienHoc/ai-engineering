@@ -63,3 +63,29 @@ test("tutor skill states every limit that applies even after approval", () => {
   }
   assert.match(text, /new topic.*new approval/is);
 });
+
+test("term-feedback pre-approves nothing and cannot run commands or spawn agents", () => {
+  const text = read("skills/term-feedback/SKILL.md");
+  assert.doesNotMatch(text, /^allowed-tools:/m, "no path-scoped form was verified, so nothing is pre-approved");
+  const line = /^disallowed-tools:(.*)$/m.exec(text)?.[1] ?? "";
+  for (const tool of ["Bash", "PowerShell", "Agent", "NotebookEdit"]) {
+    assert.match(line, new RegExp(`\\b${tool}\\b`), `must list ${tool}`);
+  }
+  assert.match(text, /unknown-terms\.jsonl/);
+});
+
+test("quality-report is read-only and pre-approves only its own script", () => {
+  const text = read("skills/quality-report/SKILL.md");
+  const dis = /^disallowed-tools:(.*)$/m.exec(text)?.[1] ?? "";
+  for (const tool of ["Write", "Edit", "NotebookEdit"]) {
+    assert.match(dis, new RegExp(`\\b${tool}\\b`), `must list ${tool}`);
+  }
+  const allowed = /^allowed-tools:\s*(.*)$/m.exec(text)?.[1].trim() ?? "";
+  assert.equal(allowed, "Bash(node ${CLAUDE_PLUGIN_ROOT}/tools/quality-report.ts *)");
+});
+
+test("governance records the approved ledger exception and frontend-architect cites BH-004", () => {
+  assert.match(read("governance/policy.md"), /unknown-terms\.jsonl/);
+  assert.match(read("skills/frontend-architect/SKILL.md"), /BH-004/);
+  assert.match(read("core/principles.md"), /thuật ngữ/);
+});
