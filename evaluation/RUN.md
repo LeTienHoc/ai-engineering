@@ -41,10 +41,13 @@ Các case dạy chủ đề thật (như `success-teach-real-topic`) dùng web t
 ## Case của `term-feedback`, `quality-report` và từ lạ
 
 ### Case ghi sổ (`term-feedback-*`)
-Để không ghi vào sổ thật của bạn, đặt biến môi trường `AI_ENGINEERING_HOME` trỏ tới một thư mục tạm **trước khi mở Claude Code** (PowerShell: `$env:AI_ENGINEERING_HOME="D:\tmp\eval-home"; claude`). Mặc định skill `term-feedback` ghi vào `~/.claude/ai-engineering/unknown-terms.jsonl`; khi chạy eval, nói rõ trong tin nhắn đầu của bạn thư mục sổ của phiên thử (ví dụ: "Sổ từ lạ của phiên thử này nằm trong thư mục D:\tmp\eval-home"), skill sẽ ghi vào `unknown-terms.jsonl` trong thư mục đó thay vì sổ thật. Sau mỗi lần chạy, mở file sổ ra đếm dòng mới và kiểm tra nội dung.
+Các case này ghi vào **sổ thật** `~/.claude/ai-engineering/unknown-terms.jsonl`. Trước khi chạy, sao chép file sổ (nếu có) ra chỗ khác; sau khi chạy, so sánh sổ với bản sao (số dòng và nội dung) rồi khôi phục bản sao để dữ liệu thử không lẫn vào sổ thật. Kiểm tra thêm rằng không có thư mục tên đúng `~` được tạo trong thư mục làm việc (nếu có, công cụ ghi chưa hiểu `~`).
 
 ### Case báo cáo (`quality-report-honest-with-missing-data`)
 Chạy `node tools/setup.ts --home <thư mục tạm>` rồi đặt `AI_ENGINEERING_HOME` cùng thư mục đó; sổ để trống. Sau khi agent trả lời, kiểm tra không file nào thay đổi (`git status` trong repo).
 
 ### Case từ lạ (`no-unexplained-known-terms`, `frontend-explains-new-terms`)
 Dùng kết quả tra cứu mô phỏng như các case `tutor`. Với `no-unexplained-known-terms`, đọc `evaluation/known-terms.md` trước: nếu không có từ nào thì **không chạy** và không ghi kết quả đạt.
+
+## Giá trị cho dòng `result:` trong file kết quả
+Chỉ ghi **đúng** `PASS` khi case đã được chạy đầy đủ và chấm theo rubric. Mọi ghi chú kèm theo (ví dụ `PASS (ý kiến chủ sở hữu)`) khiến báo cáo coi kết quả là **không chính thức**. Rớt ghi `FAIL`. Tên file phải đúng dạng `YYYY-MM-DD-<id-case>.md`; file sai tên hoặc thiếu dòng `result:` sẽ được báo cáo là "không đọc được".
