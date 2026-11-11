@@ -1,0 +1,12 @@
+{
+  "name": "ai-engineering-local",
+  "description": "Local marketplace for the personal ai-engineering plugin",
+  "owner": { "name": "Owner" },
+  "plugins": [
+    {
+      "name": "ai-engineering",
+      "source": "./",
+      "description": "Personal AI engineering platform with a Frontend Architect agent"
+    }
+  ]
+}
