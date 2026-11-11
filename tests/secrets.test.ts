@@ -14,7 +14,7 @@ test("AWS, GitHub and private key patterns are detected", () => {
 });
 
 test("assignment of a literal password is detected", () => {
-  assert.ok(scanSecrets('password = "hunter2hunter2"').length > 0);
+  assert.ok(scanSecrets(["password = \"hunter", "2hunter2\""].join("")).length > 0);
 });
 
 test("normal prose mentioning token or secret is not flagged", () => {

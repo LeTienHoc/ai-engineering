@@ -1,12 +1,18 @@
-import { headings, parseFrontmatter, type Issue } from "./frontmatter.ts";
+import { headings, parseFrontmatter, unsupportedIssues, type Issue } from "./frontmatter.ts";
 
 export const EVAL_TYPES = ["success", "failure", "edge", "security", "consistency"];
 export const EVAL_SECTIONS = ["Input", "Expected", "Fail If"];
 
+/** Rule ids listed in a case's `rules:` frontmatter, always as an array. */
+export function caseRules(value: string | string[] | undefined): string[] {
+  if (!value) return [];
+  return Array.isArray(value) ? value : value.split(",").map((v) => v.trim()).filter(Boolean);
+}
+
 export function validateEvalCase(text: string): Issue[] {
   const fm = parseFrontmatter(text);
   if (!fm) return [{ code: "NO_FRONTMATTER", message: "eval case must start with a --- frontmatter block" }];
-  const issues: Issue[] = [];
+  const issues: Issue[] = unsupportedIssues(fm);
   for (const key of ["id", "type", "rules"]) {
     if (!fm.data[key] || (Array.isArray(fm.data[key]) && fm.data[key].length === 0)) {
       issues.push({ code: "MISSING_FIELD", message: `frontmatter is missing '${key}'` });

@@ -1,14 +1,16 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseFrontmatter, type Issue } from "./lib/frontmatter.ts";
 import { validateSkill } from "./lib/skill.ts";
-import { validateEvalCase } from "./lib/evalcase.ts";
-import { checkTraceability, parseRules } from "./lib/rules.ts";
+import { caseRules, validateEvalCase } from "./lib/evalcase.ts";
+import { checkCases, checkTraceability, findUnparsedRuleHeadings, parseRules, type CaseRef, type Rule } from "./lib/rules.ts";
 import { scanSecrets } from "./lib/secrets.ts";
 
-const root = resolve(fileURLToPath(import.meta.url), "..", "..");
+const root = resolve(process.env.VALIDATE_ROOT ?? resolve(fileURLToPath(import.meta.url), "..", ".."));
 const SKIP_DIRS = new Set([".git", "node_modules", ".superpowers"]);
+const BINARY = /\.(png|jpe?g|gif|ico|webp|pdf|zip|gz|woff2?|ttf|eot|mp4|mov)$/i;
+const MAX_SCAN_BYTES = 2 * 1024 * 1024;
 const found: { file: string; issue: Issue }[] = [];
 
 function report(file: string, issues: Issue[]) {
@@ -27,28 +29,39 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 const read = (f: string) => readFileSync(f, "utf8");
+const rel = (f: string) => relative(root, f).replace(/\\/g, "/");
 const all = walk(root);
 
-// Eval cases
-const caseIds: string[] = [];
-for (const f of all.filter((f) => /evaluation[\\/]cases[\\/][^\\/]+\.md$/.test(f))) {
+// Eval cases (any depth under evaluation/cases)
+const cases: CaseRef[] = [];
+for (const f of all.filter((f) => /^evaluation\/cases\/.+\.md$/.test(rel(f)))) {
   const text = read(f);
   report(f, validateEvalCase(text));
-  const id = parseFrontmatter(text)?.data.id;
-  if (typeof id === "string") {
-    if (caseIds.includes(id)) report(f, [{ code: "DUPLICATE_ID", message: `eval case id '${id}' is used more than once` }]);
-    caseIds.push(id);
+  const fm = parseFrontmatter(text);
+  const id = fm?.data.id;
+  if (typeof id === "string" && id) {
+    if (cases.some((c) => c.id === id)) report(f, [{ code: "DUPLICATE_ID", message: `eval case id '${id}' is used more than once` }]);
+    if (id !== basename(f, ".md")) report(f, [{ code: "FILENAME_ID", message: `case id '${id}' must equal its file name '${basename(f, ".md")}'` }]);
+    cases.push({ id, rules: caseRules(fm.data.rules) });
   }
 }
 
-// Skills and their rules
-for (const f of all.filter((f) => /skills[\\/][^\\/]+[\\/]SKILL\.md$/.test(f))) report(f, validateSkill(read(f)));
-for (const f of all.filter((f) => /skills[\\/][^\\/]+[\\/]references[\\/]rules\.md$/.test(f))) {
-  report(f, checkTraceability(parseRules(read(f)), caseIds));
+// Skills (SKILL.md in any letter case) and their rules
+const allRules: Rule[] = [];
+let firstRulesFile: string | null = null;
+for (const f of all.filter((f) => /^skills\/[^/]+\/skill\.md$/i.test(rel(f)))) report(f, validateSkill(read(f)));
+for (const f of all.filter((f) => /^skills\/[^/]+\/references\/rules\.md$/.test(rel(f)))) {
+  const text = read(f);
+  const rules = parseRules(text);
+  firstRulesFile ??= f;
+  report(f, [...findUnparsedRuleHeadings(text), ...checkTraceability(rules, cases.map((c) => c.id))]);
+  allRules.push(...rules);
 }
+if (firstRulesFile || cases.length > 0) report(firstRulesFile ?? join(root, "evaluation", "cases"), checkCases(allRules, cases));
 
-// Secret scan over text files (tests/ holds deliberate fake secrets as fixtures)
-for (const f of all.filter((f) => /\.(md|json|ts)$/.test(f) && !relative(root, f).startsWith("tests"))) {
+// Secret scan: every text file, including .env*, scripts and test fixtures
+for (const f of all) {
+  if (BINARY.test(f) || statSync(f).size > MAX_SCAN_BYTES) continue;
   report(f, scanSecrets(read(f)));
 }
 

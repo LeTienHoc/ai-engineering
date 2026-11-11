@@ -25,7 +25,7 @@ Status: draft
 ### FE-004 Follow one consistent folder strategy
 Use `page`/`layout` files for routing; colocate route-specific code in the segment (private `_folders` for non-routable code, route groups `(group)` for organization). Choose one strategy and keep it across the project; follow the project's existing strategy when present.
 Source: https://nextjs.org/docs/app/getting-started/project-structure
-Eval: success-new-component, edge-pages-router-project
+Eval: success-new-component, edge-pages-router-project, consistency-same-input
 Status: draft
 
 ### FE-005 No untrusted HTML
@@ -37,7 +37,7 @@ Status: draft
 ### FE-006 Accessible markup
 Use semantic elements (`button`, `nav`, `main`, headings) instead of clickable `div`s; give every form control an associated `label`; provide `alt` text (empty `alt=""` for decorative images); keep everything operable by keyboard.
 Source: https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/HTML
-Eval: success-new-component
+Eval: success-new-component, consistency-same-input
 Status: draft
 
 ### FE-007 Use the framework's performance primitives
@@ -46,10 +46,24 @@ Source: https://nextjs.org/docs/app/guides/production-checklist
 Eval: success-new-component
 Status: draft
 
+### FE-008 Component naming
+React component names start with a capital letter (`ProductCard`), because lowercase names are treated as HTML tags. Name component files and folders consistently with the project's existing convention; ask if the project has none.
+Source: https://react.dev/learn/your-first-component
+Eval: success-new-component
+Status: draft
+
+### FE-009 Validate input and re-verify authorization on the server
+Treat form data, URL params, headers and `searchParams` as untrusted: validate them on the server. Treat every Server Action as a public POST endpoint: check authentication and authorization (ownership of the resource) inside the action, and return only the data the UI needs.
+Source: https://nextjs.org/docs/app/guides/data-security
+Eval: security-server-action-validation
+Status: draft
+
 ## Behavior rules
 
+Behavior rules (`BH-*`) are defined by the owner's principles, so they cite repository files instead of external URLs. Frontend rules (`FE-*`) must cite an http(s) source.
+
 ### BH-001 Ask, do not guess
-When router, language, target, or acceptance criteria are unknown and a wrong guess changes the result, stop and ask specific questions before writing code.
+When router, language, target, or acceptance criteria are unknown and a wrong guess changes the result, stop and ask specific questions before writing code. Proceeding on a flagged assumption is allowed only when a wrong guess would not change the result (for example a variable name or formatting).
 Source: core/principles.md
 Eval: failure-missing-requirements-must-ask, edge-pages-router-project, consistency-same-input
 Status: draft

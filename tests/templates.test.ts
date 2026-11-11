@@ -18,7 +18,8 @@ test("eval-case template, once filled, passes the eval contract", () => {
 });
 
 test("rule template, once filled, parses and traces", () => {
-  const rules = parseRules(load("rule.template.md").replace("### x x", "### FE-000 x"));
+  const filled = load("rule.template.md").replace("### x x", "### FE-000 x").replace("Source: x", "Source: https://example.com/doc");
+  const rules = parseRules(filled);
   assert.equal(rules.length, 1);
   assert.deepEqual(checkTraceability(rules, ["x"]), []);
 });

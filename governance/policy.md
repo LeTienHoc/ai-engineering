@@ -10,7 +10,7 @@
 - Xóa file/thư mục; ghi đè file ngoài phạm vi nhiệm vụ.
 - `git push`, tạo/xóa branch từ xa, sửa lịch sử git.
 - Cài hoặc nâng cấp dependency.
-- Đọc, sửa hoặc tạo file `.env` và file chứa khóa.
+- Tạo hoặc sửa file `.env*` (ví dụ thêm một khóa rỗng). Không bao giờ đọc hay in **giá trị** trong đó, kể cả khi được duyệt (xem mục 3).
 - Mọi hành động khó hoàn tác hoặc tác động ra ngoài máy.
 
 ## 3. Bảo vệ secret

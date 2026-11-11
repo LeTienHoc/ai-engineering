@@ -1,4 +1,4 @@
-import { headings, parseFrontmatter, type Issue } from "./frontmatter.ts";
+import { headings, parseFrontmatter, unsupportedIssues, type Issue } from "./frontmatter.ts";
 
 export type { Issue };
 
@@ -18,7 +18,7 @@ export const SKILL_SECTIONS = [
 export function validateSkill(text: string): Issue[] {
   const fm = parseFrontmatter(text);
   if (!fm) return [{ code: "NO_FRONTMATTER", message: "SKILL.md must start with a --- frontmatter block" }];
-  const issues: Issue[] = [];
+  const issues: Issue[] = unsupportedIssues(fm);
   for (const key of ["name", "description"]) {
     if (!fm.data[key]) issues.push({ code: "MISSING_FIELD", message: `frontmatter is missing '${key}'` });
   }
