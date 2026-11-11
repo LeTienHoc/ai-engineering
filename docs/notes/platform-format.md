@@ -27,3 +27,15 @@ Thử không cài: `claude --plugin-dir <thư-mục-plugin>`; sau khi sửa dùn
 
 ## Chưa xác minh
 - Cờ `--scope user` tường minh (mặc định đã là user; đã xác nhận `scope: user`). Đã xác nhận: đường dẫn tuyệt đối dạng `D:/DuAn/...` chạy được. Còn chưa xác minh: ký tự hợp lệ của `name` trong SKILL.md. Kiểm tra bằng thực tế ở Task 8.
+
+## Quyền công cụ của skill (đã xác minh 2026-11-11)
+Nguồn: https://code.claude.com/docs/en/skills , https://code.claude.com/docs/en/permissions
+- `allowed-tools` **cấp sẵn quyền** (không hỏi) cho các công cụ liệt kê, chỉ trong lượt gọi skill; nó **không giới hạn** công cụ nào khả dụng.
+- `disallowed-tools` **gỡ** các công cụ khỏi tập khả dụng khi skill hoạt động, hết hiệu lực khi người dùng gửi tin nhắn kế tiếp. Chấp nhận chuỗi cách nhau bằng dấu cách/dấu phẩy hoặc danh sách YAML.
+- Skill không đặt `allowed-tools` thì WebSearch/WebFetch vẫn theo prompt quyền thông thường (WebSearch cần duyệt; WebFetch cần duyệt trừ một tập tên miền tài liệu được duyệt sẵn).
+- Chưa xác minh: chuỗi tên chính xác `WebSearch`/`WebFetch` trong `allowed-tools`; hành vi ở chế độ auto/bypass; danh sách tên miền được duyệt sẵn.
+
+## Quyết định cho skill `tutor`
+- **Không đặt `allowed-tools`** để việc tra web vẫn đi qua prompt quyền của Claude Code.
+- Chat-only được ép bằng `disallowed-tools: Write Edit NotebookEdit Bash`.
+- Vì WebFetch có tập tên miền duyệt sẵn (có thể không hiện prompt), bước **xin duyệt bằng lời** trong skill (TU-001) là lớp kiểm soát chính, không dựa riêng vào prompt của hệ thống.
