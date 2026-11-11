@@ -26,4 +26,4 @@ claude plugin list
 Thử không cài: `claude --plugin-dir <thư-mục-plugin>`; sau khi sửa dùng `/reload-plugins`.
 
 ## Chưa xác minh
-- Cờ `--scope user` tường minh; đường dẫn tuyệt đối Windows cho `marketplace add`; ký tự hợp lệ của `name` trong SKILL.md. Kiểm tra bằng thực tế ở Task 8.
+- Cờ `--scope user` tường minh (mặc định đã là user; đã xác nhận `scope: user`). Đã xác nhận: đường dẫn tuyệt đối dạng `D:/DuAn/...` chạy được. Còn chưa xác minh: ký tự hợp lệ của `name` trong SKILL.md. Kiểm tra bằng thực tế ở Task 8.
