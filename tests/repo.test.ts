@@ -89,3 +89,24 @@ test("governance records the approved ledger exception and frontend-architect ci
   assert.match(read("skills/frontend-architect/SKILL.md"), /BH-004/);
   assert.match(read("core/principles.md"), /thuật ngữ/);
 });
+
+test("agent-builder never pre-approves tools and documents the generated layout", () => {
+  const text = read("skills/agent-builder/SKILL.md");
+  assert.doesNotMatch(text, /^allowed-tools:/m, "agent-builder must not set allowed-tools");
+  for (const needle of [".claude/agents/", "agent-kit", "list the files", "AB-001"]) {
+    assert.ok(text.includes(needle), `SKILL.md must mention '${needle}'`);
+  }
+});
+
+test("every agent-builder rule has at least one builder-* eval case", () => {
+  const rules = read("skills/agent-builder/references/rules.md");
+  const blocks = rules.split(/^### /m).slice(1).filter((b) => /^AB-\d+/.test(b));
+  assert.equal(blocks.length, 10, "expected AB-001..AB-010");
+  for (const b of blocks) {
+    assert.match(/^Eval:\s*(.*)$/m.exec(b)?.[1] ?? "", /\bbuilder-[a-z-]+/, `${b.slice(0, 6)} needs a builder-* eval case`);
+  }
+});
+
+test("agent template exists", () => {
+  assert.ok(existsSync(join(root, "core", "templates", "agent.template.md")));
+});

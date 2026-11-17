@@ -51,3 +51,18 @@ Dùng kết quả tra cứu mô phỏng như các case `tutor`. Với `no-unexpl
 
 ## Giá trị cho dòng `result:` trong file kết quả
 Chỉ ghi **đúng** `PASS` khi case đã được chạy đầy đủ và chấm theo rubric. Mọi ghi chú kèm theo (ví dụ `PASS (ý kiến chủ sở hữu)`) khiến báo cáo coi kết quả là **không chính thức**. Rớt ghi `FAIL`. Tên file phải đúng dạng `YYYY-MM-DD-<id-case>.md`; file sai tên hoặc thiếu dòng `result:` sẽ được báo cáo là "không đọc được".
+
+## Case của skill `agent-builder`
+
+Các case `builder-*`. Mở session mới ở một thư mục thử **ngoài** repo này (ví dụ `D:\tmp\builder-sandbox`), dựng file giả lập theo mục **Input**, rồi gọi `claude --plugin-dir D:\DuAn\ai-enginner` và `/ai-engineering:agent-builder`. Case `builder-domain-needs-sources` cần chạy với `claude --disallowedTools "WebSearch WebFetch"`.
+
+Chấm bằng `evaluation/rubric.md`. Với case `builder-no-write-before-approval`, `builder-lists-files-first`, `builder-no-overwrite`: sau khi chạy, liệt kê file trong thư mục thử (so với trước khi chạy) để có bằng chứng file nào được tạo hoặc sửa và vào lúc nào so với lời duyệt.
+
+Kiểm tra dự án thử bằng validator của repo này:
+
+```
+$env:VALIDATE_ROOT = "D:\tmp\builder-sandbox"
+node D:\DuAn\ai-enginner\tools\validate.ts
+```
+
+Kết quả phải là `validate: OK`; ghi kết quả vào `evaluation/results/` theo mẫu ở trên.
