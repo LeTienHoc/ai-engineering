@@ -3,6 +3,7 @@ import { basename, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseFrontmatter, type Issue } from "./lib/frontmatter.ts";
 import { validateSkill } from "./lib/skill.ts";
+import { validateAgent, validateAgentKit } from "./lib/agent.ts";
 import { caseRules, validateEvalCase } from "./lib/evalcase.ts";
 import { checkCases, checkTraceability, findUnparsedRuleHeadings, parseRules, type CaseRef, type Rule } from "./lib/rules.ts";
 import { scanSecrets } from "./lib/secrets.ts";
@@ -62,6 +63,55 @@ if (firstRulesFile || cases.length > 0) report(firstRulesFile ?? join(root, "eva
 
 // Regression term list
 for (const f of all.filter((f) => rel(f) === "evaluation/known-terms.md")) report(f, parseKnownTerms(read(f)).issues);
+
+// Generated agents: .claude/agents/<name>.md with a kit in .claude/agent-kit/<name>/ (rules.md, cases/<id>.md).
+// Kept in its own namespace: ids only need to be unique across the agents of this root.
+{
+  const agentFiles = all.filter((f) => /^\.claude\/agents\/[^/]+\.md$/.test(rel(f)));
+  const agentNames = new Set(agentFiles.map((f) => basename(f, ".md")));
+  const kitNames = new Set(
+    all.map((f) => /^\.claude\/agent-kit\/([^/]+)\//.exec(rel(f))?.[1]).filter((n): n is string => !!n),
+  );
+  const seenCases = new Set<string>();
+  const seenRules = new Set<string>();
+  for (const f of agentFiles) {
+    const name = basename(f, ".md");
+    report(f, validateAgent(read(f), name));
+    const kitDir = join(root, ".claude", "agent-kit", name);
+    const rulesFile = join(kitDir, "rules.md");
+    const caseFiles = all.filter((c) => rel(c).startsWith(`.claude/agent-kit/${name}/cases/`) && c.endsWith(".md"));
+    const kitCases: CaseRef[] = [];
+    const kitTypes: { id: string; type: string }[] = [];
+    for (const c of caseFiles) {
+      const text = read(c);
+      report(c, validateEvalCase(text));
+      const fm = parseFrontmatter(text);
+      const id = fm?.data.id;
+      if (typeof id !== "string" || !id) continue;
+      if (id !== basename(c, ".md")) report(c, [{ code: "FILENAME_ID", message: `case id '${id}' must equal its file name '${basename(c, ".md")}'` }]);
+      if (seenCases.has(id)) report(c, [{ code: "DUPLICATE_ID", message: `eval case id '${id}' is used more than once in this project` }]);
+      seenCases.add(id);
+      kitCases.push({ id, rules: caseRules(fm.data.rules) });
+      kitTypes.push({ id, type: String(fm.data.type ?? "") });
+    }
+    const hasRules = existsSync(rulesFile);
+    report(f, validateAgentKit({ name, hasRules, cases: kitTypes }));
+    if (hasRules) {
+      const text = read(rulesFile);
+      const rules = parseRules(text);
+      report(rulesFile, [...findUnparsedRuleHeadings(text), ...checkTraceability(rules, kitCases.map((c) => c.id)), ...checkCases(rules, kitCases)]);
+      for (const r of rules) {
+        if (seenRules.has(r.id)) report(rulesFile, [{ code: "DUPLICATE_ID", message: `rule id ${r.id} is used by more than one agent in this project` }]);
+        seenRules.add(r.id);
+      }
+    }
+  }
+  for (const kit of kitNames) {
+    if (!agentNames.has(kit)) {
+      report(join(root, ".claude", "agent-kit", kit), [{ code: "KIT_WITHOUT_AGENT", message: `kit '${kit}' has no .claude/agents/${kit}.md` }]);
+    }
+  }
+}
 
 // Secret scan: every text file, including .env*, scripts and test fixtures
 for (const f of all) {
