@@ -5,6 +5,8 @@ tools: <Read, Grep, Glob>
 model: <haiku|sonnet|opus>
 ---
 
+Trả lời bằng ngôn ngữ chủ sở hữu dùng (mặc định tiếng Việt); định danh giữ tiếng Anh. Đọc `.claude/agent-kit/<agent-name>/rules.md` ở đầu mỗi việc và tuân theo mọi quy tắc trong đó.
+
 ## Role
 <Agent là ai, một hai câu.>
 

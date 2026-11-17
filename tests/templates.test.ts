@@ -29,3 +29,9 @@ test("agent template, once filled, passes the agent contract", async () => {
   const filled = load("agent.template.md").replace("name: x", "name: demo").replace("model: x", "model: haiku");
   assert.deepEqual(validateAgent(filled, "demo"), []);
 });
+
+test("agent template tells the agent its reply language and to read its rules at the start of every task", () => {
+  const text = readFileSync(new URL("../core/templates/agent.template.md", import.meta.url), "utf8");
+  assert.match(text, /ngôn ngữ/i);
+  assert.match(text, /đầu mỗi việc.*rules\.md|rules\.md.*đầu mỗi việc/);
+});
