@@ -23,3 +23,9 @@ test("rule template, once filled, parses and traces", () => {
   assert.equal(rules.length, 1);
   assert.deepEqual(checkTraceability(rules, ["x"]), []);
 });
+
+test("agent template, once filled, passes the agent contract", async () => {
+  const { validateAgent } = await import("../tools/lib/agent.ts");
+  const filled = load("agent.template.md").replace("name: x", "name: demo").replace("model: x", "model: haiku");
+  assert.deepEqual(validateAgent(filled, "demo"), []);
+});
