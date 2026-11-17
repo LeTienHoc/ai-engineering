@@ -5,14 +5,16 @@ Plugin Claude Code cá nhân để xây các AI agent nhất quán, kiểm chứ
 - **Tutor** (`/ai-engineering:tutor`): dạy bất kỳ chủ đề nào bạn hỏi, mỗi bài một ý chính, có ví dụ trước, có câu hỏi kiểm tra hiểu bài và ghi nguồn. **Xin duyệt trước khi tra web**; không có nguồn xác thực thì nói thẳng, không dạy từ trí nhớ như thể chắc chắn. Chỉ trò chuyện, không ghi file, không nhớ giữa các phiên.
 - **Term feedback** (`/ai-engineering:term-feedback`): khi bạn hỏi nghĩa một từ ("Promise là gì?"), agent giải thích bằng lời thường và ghi từ đó vào sổ từ lạ. Từ riêng của dự án (tên hàm, đường dẫn) được giải thích nhưng **không** ghi vào sổ.
 - **Quality report** (`/ai-engineering:quality-report`): báo cáo chỉ đọc: agent nào làm bạn khó hiểu nhiều nhất, từ nào lặp lại, eval case nào chưa chạy hoặc chỉ đạt không chính thức. Thiếu dữ liệu thì nói rõ, không bao giờ báo "ổn" khi chưa có dữ liệu.
+- **Agent builder** (`/ai-engineering:agent-builder`), "bộ não" bản 1: bạn mô tả agent cần tạo; nó hỏi phần còn thiếu, đề xuất thiết kế, **chỉ ghi file sau khi bạn duyệt** và sau khi liệt kê danh sách file. Nếu bạn chưa biết cần agent nào, nó đưa danh sách để bạn chọn.
 
-Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans/` (Phase 1: lõi + Frontend Architect; Phase 2: Tutor)
+Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans/` (Phase 1: lõi + Frontend Architect; Phase 2: Tutor; Brain v1: Agent builder)
 
 ## Cấu trúc
 - `core/`: nguyên tắc và các mẫu (skill, eval case, rule), nguồn sự thật duy nhất.
 - `skills/frontend-architect/`, `skills/tutor/`: mỗi agent có `SKILL.md` + `references/rules.md` (quy tắc, mỗi quy tắc có nguồn và eval).
 - `evaluation/`: eval case, rubric, hướng dẫn chạy (`RUN.md`), kết quả (`results/`).
 - `governance/`: chính sách quyền hạn/secret/chống injection, quy trình phiên bản.
+- `examples/code-optimizer/`: agent mẫu do builder tạo (chỉ đọc, gợi ý tối ưu code).
 - `tools/`, `tests/`: validator TypeScript (chạy bằng Node, không cần cài thư viện).
 
 ## Theo dõi chất lượng (sổ từ lạ)
@@ -24,6 +26,18 @@ Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans
   "Edit(//c/Users/<tên-người-dùng>/.claude/ai-engineering/unknown-terms.jsonl)"
   ```
   Agent không tự sửa file cài đặt của bạn.
+
+## Agent do builder tạo
+- Là **subagent** của Claude Code, không phải skill: chạy trong ngữ cảnh riêng và chỉ trả về bản tóm tắt. Bố cục trong dự án đích:
+  - `.claude/agents/<tên>.md`: agent (frontmatter `name`, `description`, `tools`, `model`; thân là system prompt).
+  - `.claude/agent-kit/<tên>/`: `rules.md`, `cases/<id>.md` (tối thiểu 3 case: success, failure, edge), `references/` (kiến thức dài, đọc khi cần).
+- **Ngân sách token** (validator báo lỗi cứng): thân ≤ 120 dòng, `description` ≤ 300 ký tự, bắt buộc có `tools` và `model`.
+- **Nói thẳng:** subagent không miễn phí, mỗi agent tiêu token riêng. Tiết kiệm đến từ prompt ngắn, model nhỏ cho việc đơn giản và công cụ giới hạn. `tools` là giới hạn cứng; giới hạn "chỉ đụng file nào" là chỉ dẫn mềm.
+- **Kiểm tra một dự án:**
+  ```
+  $env:VALIDATE_ROOT = "D:\duong-dan\du-an"
+  node D:\DuAn\ai-enginner\tools\validate.ts
+  ```
 
 ## Cài một lần, dùng mọi dự án
 Yêu cầu: Claude Code, Node 22.18+ (đã kiểm tra với Node 26).
@@ -52,6 +66,8 @@ Xem `evaluation/RUN.md`. Chạy tay qua Claude Code, không dùng API key.
 - Bộ quy tắc frontend đã được chủ sở hữu duyệt (2026-11-11); quy tắc mới hoặc sửa đổi bắt đầu ở `draft` cho đến khi được duyệt.
 - Eval chạy tay; chưa gắn hook/CI. Kết quả eval phụ thuộc model nên "nhất quán" được đo bằng rubric (2/3 lần chạy).
 - Chỉ phủ Next.js App Router + TypeScript; Pages Router chỉ được phát hiện và cảnh báo.
+- Chưa xác minh: danh sách `tools` của subagent có được ép trong suốt một lượt chạy foreground hay không (tài liệu chỉ nêu rõ cho chạy nền và tiếp tục).
+- Quy tắc `AB-*` của builder và `CO-*` của agent mẫu đang `draft`; eval của builder và agent mẫu chưa chạy.
 - Một người dùng; không có marketplace công khai hay dashboard.
 
 ## Báo lỗi / sửa
