@@ -2,7 +2,7 @@
 
 ## 0.4.0 - (chưa phát hành)
 - Bộ não bản 1, skill `agent-builder`: hỏi phần thiếu, đề xuất thiết kế, chỉ ghi file sau khi duyệt và sau khi liệt kê file, không ghi đè; sinh **subagent** (`.claude/agents/<tên>.md`) kèm bộ `.claude/agent-kit/<tên>/` (quy tắc, eval). Quy tắc AB-001..AB-010 (draft, chờ duyệt) và 8 eval case `builder-*` (chưa chạy).
-- Validator: mô-đun `tools/lib/agent.ts` (ngân sách token: thân ≤ 120 dòng, `description` ≤ 300 ký tự, bắt buộc `tools`, `model`, 5 mục) và chế độ kiểm tra dự án đích qua `VALIDATE_ROOT` (KIT_WITHOUT_AGENT, NO_KIT_RULES, TOO_FEW_CASES, MISSING_CASE_TYPE, trùng id trong cùng dự án). Mẫu `core/templates/agent.template.md`.
+- Validator: mô-đun `tools/lib/agent.ts` (ngân sách token: thân ≤ 120 dòng, `description` ≤ 300 ký tự, bắt buộc `tools`, `model`, 5 mục) và chế độ kiểm tra dự án đích qua `VALIDATE_ROOT` (KIT_WITHOUT_AGENT, NO_KIT_RULES, TOO_FEW_CASES, MISSING_CASE_TYPE, trùng id trong cùng dự án, NESTED_AGENT); cờ `--agents` chỉ kiểm tra agent sinh ra, chạy được với cả dự án lẫn `~/.claude`, báo NO_AGENTS khi không tìm thấy agent nào. Skill gọi validator qua `${CLAUDE_PLUGIN_ROOT}` để dùng được ở dự án khác (sửa sau review độc lập). Mẫu `core/templates/agent.template.md`.
 - Agent mẫu `examples/code-optimizer/` (chỉ đọc, gợi ý tối ưu code, quy tắc CO-001..CO-006 draft): tạo trong phiên bằng cách làm theo `agent-builder`, chưa qua lần chạy skill thật, chủ sở hữu chưa thử trên dự án thật.
 - Bản này gồm cả phần Phase 3B bên dưới (trước ghi là 0.3.0, chưa từng phát hành); quy tắc 3B vẫn draft, coi là thử nghiệm.
 

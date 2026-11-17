@@ -36,8 +36,9 @@ Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans
 - **Kiểm tra một dự án:**
   ```
   $env:VALIDATE_ROOT = "D:\duong-dan\du-an"
-  node D:\DuAn\ai-enginner\tools\validate.ts
+  node D:\DuAn\ai-enginner\tools\validate.ts --agents
   ```
+  `--agents` chỉ kiểm tra agent sinh ra (và quét secret trong chính các file đó), nên file khác của dự án không làm fail. Với bố cục dùng chung, đặt `VALIDATE_ROOT` là `~/.claude`.
 
 ## Cài một lần, dùng mọi dự án
 Yêu cầu: Claude Code, Node 22.18+ (đã kiểm tra với Node 26).

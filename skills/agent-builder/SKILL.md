@@ -43,7 +43,7 @@ A design proposal first; after approval, the agent file and its kit; then a repo
 4. **Sources (AB-007):** for a domain agent, ask approval before any lookup; a rule without a source read this session is not written.
 5. **List the files (AB-003):** show every path to create and ask the go-ahead; ask again for any path that already exists.
 6. **Write:** the agent from the template, `rules.md` (every rule has `Source`, `Eval`, `Status: draft`) and at least 3 case files (AB-005, AB-006).
-7. **Verify:** run `node tools/validate.ts` with `VALIDATE_ROOT` set to the target project and read the output.
+7. **Verify:** set the environment variable `VALIDATE_ROOT` to the destination (the target project, or `~/.claude` for the shared layout), run `node "${CLAUDE_PLUGIN_ROOT}/tools/validate.ts" --agents` (keep the quotes) and read the output. `--agents` checks only the generated agents, so unrelated files in the project do not fail it.
 8. **Report (AB-010).**
 
 ## Ask When Missing

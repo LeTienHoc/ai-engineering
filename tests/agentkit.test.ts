@@ -8,13 +8,13 @@ import { fileURLToPath } from "node:url";
 
 const validate = fileURLToPath(new URL("../tools/validate.ts", import.meta.url));
 
-function project(files: Record<string, string>): { status: number | null; out: string } {
+function project(files: Record<string, string>, args: string[] = []): { status: number | null; out: string } {
   const dir = mkdtempSync(join(tmpdir(), "agentkit-"));
   for (const [rel, text] of Object.entries(files)) {
     mkdirSync(dirname(join(dir, rel)), { recursive: true });
     writeFileSync(join(dir, rel), text);
   }
-  const r = spawnSync(process.execPath, [validate], { env: { ...process.env, VALIDATE_ROOT: dir }, encoding: "utf8" });
+  const r = spawnSync(process.execPath, [validate, ...args], { env: { ...process.env, VALIDATE_ROOT: dir }, encoding: "utf8" });
   return { status: r.status, out: (r.stdout ?? "") + (r.stderr ?? "") };
 }
 
@@ -105,4 +105,45 @@ test("a rule pointing at a missing case is UNKNOWN_EVAL, an unreferenced case is
 test("a project without .claude/agents is validated as before", () => {
   const r = project({ "README.md": "hello" });
   assert.equal(r.status, 0, r.out);
+});
+
+const strip = (files: Record<string, string>) =>
+  Object.fromEntries(Object.entries(files).map(([k, v]) => [k.replace(/^\.claude\//, ""), v]));
+
+test("--agents ignores unrelated failures in the target project", () => {
+  const files = {
+    ...agentFiles("opt"),
+    "evaluation/cases/broken.md": "no frontmatter",
+    "skills/x/SKILL.md": "---\nname: x\n---\n",
+  };
+  assert.equal(project(files).status, 1, "full mode still reports the unrelated issues");
+  const r = project(files, ["--agents"]);
+  assert.equal(r.status, 0, r.out);
+});
+
+test("--agents still scans the agent files for secrets", () => {
+  const files = agentFiles("opt");
+  files[".claude/agents/opt.md"] += "key AKIA" + "ABCDEFGHIJKLMNOP\n";
+  const r = project(files, ["--agents"]);
+  assert.equal(r.status, 1);
+  assert.match(r.out, /opt\.md/);
+});
+
+test("--agents accepts a ~/.claude style root (agents/ at the top)", () => {
+  assert.equal(project(strip(agentFiles("opt")), ["--agents"]).status, 0);
+  const bad = strip(agentFiles("opt"));
+  bad["agents/opt.md"] = agentFile("opt", 125);
+  assert.match(project(bad, ["--agents"]).out, /BODY_TOO_LONG/);
+});
+
+test("--agents with no agent found fails instead of a false OK", () => {
+  const r = project({ "README.md": "hello" }, ["--agents"]);
+  assert.equal(r.status, 1);
+  assert.match(r.out, /NO_AGENTS/);
+});
+
+test("an agent file in a subfolder of .claude/agents is reported, not skipped", () => {
+  const r = project({ ...agentFiles("opt"), ".claude/agents/team/foo.md": agentFile("foo") });
+  assert.equal(r.status, 1);
+  assert.match(r.out, /NESTED_AGENT/);
 });

@@ -32,7 +32,16 @@ function walk(dir: string, out: string[] = []): string[] {
 
 const read = (f: string) => readFileSync(f, "utf8");
 const rel = (f: string) => relative(root, f).replace(/\\/g, "/");
-const all = walk(root);
+
+// `--agents`: check only generated agents and their kits (plus a secret scan of those files), for use on a
+// target project. The root may be a project (agents in `.claude/agents`) or a `.claude` folder itself
+// such as `~/.claude` (agents in `agents/`).
+const agentsOnly = process.argv.includes("--agents");
+const agentBase =
+  agentsOnly && !existsSync(join(root, ".claude", "agents")) && !existsSync(join(root, ".claude", "agent-kit"))
+    ? root
+    : join(root, ".claude");
+const all = agentsOnly ? [...walk(join(agentBase, "agents")), ...walk(join(agentBase, "agent-kit"))] : walk(root);
 
 // Eval cases (any depth under evaluation/cases)
 const cases: CaseRef[] = [];
@@ -67,19 +76,26 @@ for (const f of all.filter((f) => rel(f) === "evaluation/known-terms.md")) repor
 // Generated agents: .claude/agents/<name>.md with a kit in .claude/agent-kit/<name>/ (rules.md, cases/<id>.md).
 // Kept in its own namespace: ids only need to be unique across the agents of this root.
 {
-  const agentFiles = all.filter((f) => /^\.claude\/agents\/[^/]+\.md$/.test(rel(f)));
+  const relA = (f: string) => relative(agentBase, f).replace(/\\/g, "/");
+  const agentFiles = all.filter((f) => /^agents\/[^/]+\.md$/.test(relA(f)));
+  for (const f of all.filter((f) => /^agents\/.+\/.+\.md$/.test(relA(f)))) {
+    report(f, [{ code: "NESTED_AGENT", message: "agent files must sit directly in .claude/agents/; this file was not validated" }]);
+  }
+  if (agentsOnly && agentFiles.length === 0) {
+    report(join(agentBase, "agents"), [{ code: "NO_AGENTS", message: "--agents found no agent file in .claude/agents/ (or agents/ under a .claude root)" }]);
+  }
   const agentNames = new Set(agentFiles.map((f) => basename(f, ".md")));
   const kitNames = new Set(
-    all.map((f) => /^\.claude\/agent-kit\/([^/]+)\//.exec(rel(f))?.[1]).filter((n): n is string => !!n),
+    all.map((f) => /^agent-kit\/([^/]+)\//.exec(relA(f))?.[1]).filter((n): n is string => !!n),
   );
   const seenCases = new Set<string>();
   const seenRules = new Set<string>();
   for (const f of agentFiles) {
     const name = basename(f, ".md");
     report(f, validateAgent(read(f), name));
-    const kitDir = join(root, ".claude", "agent-kit", name);
+    const kitDir = join(agentBase, "agent-kit", name);
     const rulesFile = join(kitDir, "rules.md");
-    const caseFiles = all.filter((c) => rel(c).startsWith(`.claude/agent-kit/${name}/cases/`) && c.endsWith(".md"));
+    const caseFiles = all.filter((c) => relA(c).startsWith(`agent-kit/${name}/cases/`) && c.endsWith(".md"));
     const kitCases: CaseRef[] = [];
     const kitTypes: { id: string; type: string }[] = [];
     for (const c of caseFiles) {
@@ -108,7 +124,7 @@ for (const f of all.filter((f) => rel(f) === "evaluation/known-terms.md")) repor
   }
   for (const kit of kitNames) {
     if (!agentNames.has(kit)) {
-      report(join(root, ".claude", "agent-kit", kit), [{ code: "KIT_WITHOUT_AGENT", message: `kit '${kit}' has no .claude/agents/${kit}.md` }]);
+      report(join(agentBase, "agent-kit", kit), [{ code: "KIT_WITHOUT_AGENT", message: `kit '${kit}' has no .claude/agents/${kit}.md` }]);
     }
   }
 }

@@ -110,3 +110,11 @@ test("every agent-builder rule has at least one builder-* eval case", () => {
 test("agent template exists", () => {
   assert.ok(existsSync(join(root, "core", "templates", "agent.template.md")));
 });
+
+test("agent-builder runs the validator through the plugin root in agents-only mode", () => {
+  for (const f of ["skills/agent-builder/SKILL.md", "skills/agent-builder/references/rules.md"]) {
+    const text = read(f);
+    assert.ok(text.includes('node "${CLAUDE_PLUGIN_ROOT}/tools/validate.ts" --agents'), `${f} must use the plugin-root validator path`);
+    assert.doesNotMatch(text, /`node tools\/validate\.ts`/, `${f} must not use the repo-relative path`);
+  }
+});

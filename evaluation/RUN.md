@@ -62,7 +62,7 @@ Kiểm tra dự án thử bằng validator của repo này:
 
 ```
 $env:VALIDATE_ROOT = "D:\tmp\builder-sandbox"
-node D:\DuAn\ai-enginner\tools\validate.ts
+node D:\DuAn\ai-enginner\tools\validate.ts --agents
 ```
 
 Kết quả phải là `validate: OK`; ghi kết quả vào `evaluation/results/` theo mẫu ở trên.
