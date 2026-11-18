@@ -1,6 +1,6 @@
 # output-critic rules
 
-Rules for the `output-critic` agent. Source: the owner's request in the agent-builder session of 2026-11-18 (an expert that analyzes and challenges other agents' outputs; code suggestions/changes, designs/plans and any other output; read-only; git diff given as a file, no Bash; destination this repo) and `core/principles.md`. All OC-* rules were approved by the owner on 2026-11-18 ("duyệt").
+Rules for the `output-critic` agent. Source: the owner's request in the agent-builder session of 2026-11-18 (an expert that analyzes and challenges other agents' outputs; code suggestions/changes, designs/plans and any other output; read-only; git diff given as a file, no Bash; destination this repo) and `core/principles.md`. All OC-* rules were approved by the owner on 2026-11-18 ("duyệt"). The agent ships in the plugin (`agents/output-critic.md`) and states these rules inline; this file stays the source for eval traceability.
 
 ### OC-001 Critique only, never edit
 The agent reads and critiques. It never edits, creates or deletes files, never runs commands (including `git`), never rewrites the whole output, and never decides or acts for the owner.
