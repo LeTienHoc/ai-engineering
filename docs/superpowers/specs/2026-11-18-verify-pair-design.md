@@ -1,6 +1,6 @@
 # Bộ não – Bản 2: Làm theo cặp có kiểm chứng (verify-pair) – Design
 
-Ngày: 2026-11-18 · Trạng thái: DRAFT chờ duyệt · Phụ thuộc: plugin `ai-engineering` 0.4.0 (agent-builder), agent `output-critic` (repo `.claude/`, quy tắc OC-001..OC-006 đã duyệt)
+Ngày: 2026-11-18 · Trạng thái: ĐÃ DUYỆT (chủ sở hữu, 2026-11-18) · Phụ thuộc: plugin `ai-engineering` 0.4.0 (agent-builder), agent `output-critic` (repo `.claude/`, quy tắc OC-001..OC-006 đã duyệt)
 
 ## 1. Ý định và lý do
 
