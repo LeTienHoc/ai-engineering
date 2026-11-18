@@ -118,3 +118,30 @@ test("agent-builder runs the validator through the plugin root in agents-only mo
     assert.doesNotMatch(text, /`node tools\/validate\.ts`/, `${f} must not use the repo-relative path`);
   }
 });
+
+test("verify-pair pre-approves only its two check scripts and cannot write", () => {
+  const text = read("skills/verify-pair/SKILL.md");
+  const allowed = /^allowed-tools:\s*(.*)$/m.exec(text)?.[1] ?? "";
+  const entries = allowed.match(/Bash\([^)]*\)/g) ?? [];
+  assert.equal(entries.length, 4, "check-agent and check-script, each with and without arguments");
+  for (const e of entries) assert.match(e, /^Bash\(node "\$\{CLAUDE_PLUGIN_ROOT\}\/tools\/check-(agent|script)\.ts"( \*)?\)$/);
+  assert.equal(allowed.replace(/Bash\([^)]*\)/g, "").trim(), "", "nothing else is pre-approved");
+  const dis = /^disallowed-tools:(.*)$/m.exec(text)?.[1] ?? "";
+  for (const tool of ["Write", "Edit", "NotebookEdit"]) assert.match(dis, new RegExp(`\\b${tool}\\b`), `must disallow ${tool}`);
+});
+
+test("verify-pair fixes the report format", () => {
+  const text = read("skills/verify-pair/SKILL.md");
+  for (const needle of ["✅ đã kiểm", "❌ sai", "⚠ chưa kiểm", "Kết luận critic:", "Quyết định là của anh.", "output-critic", "check-agent.ts", "check-script.ts"]) {
+    assert.ok(text.includes(needle), `SKILL.md must contain '${needle}'`);
+  }
+});
+
+test("every verify-pair rule has at least one vp-* eval case", () => {
+  const rules = read("skills/verify-pair/references/rules.md");
+  const blocks = rules.split(/^### /m).slice(1).filter((b) => /^VP-\d+/.test(b));
+  assert.equal(blocks.length, 7, "expected VP-001..VP-007");
+  for (const b of blocks) {
+    assert.match(/^Eval:\s*(.*)$/m.exec(b)?.[1] ?? "", /\bvp-[a-z-]+/, `${b.slice(0, 6)} needs a vp-* eval case`);
+  }
+});
