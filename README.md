@@ -67,7 +67,7 @@ Xem `evaluation/RUN.md`. Chạy tay qua Claude Code, không dùng API key.
 - Eval chạy tay; chưa gắn hook/CI. Kết quả eval phụ thuộc model nên "nhất quán" được đo bằng rubric (2/3 lần chạy).
 - Chỉ phủ Next.js App Router + TypeScript; Pages Router chỉ được phát hiện và cảnh báo.
 - Chưa xác minh: danh sách `tools` của subagent có được ép trong suốt một lượt chạy foreground hay không (tài liệu chỉ nêu rõ cho chạy nền và tiếp tục).
-- Quy tắc `AB-*` của builder và `CO-*` của agent mẫu đang `draft`; eval của builder và agent mẫu chưa chạy.
+- Quy tắc `AB-*` của builder đã duyệt (2026-11-18) nhưng 8 eval `builder-*` chưa chạy thật; quy tắc `CO-*` của agent mẫu vẫn `draft` (chủ sở hữu thử trên dự án thật, đạt không chính thức).
 - Một người dùng; không có marketplace công khai hay dashboard.
 
 ## Báo lỗi / sửa
