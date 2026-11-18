@@ -190,3 +190,27 @@ test("an unknown flag or a second path fails instead of being ignored", () => {
   assert.equal(two.status, 2);
   assert.match(two.out, /one path/);
 });
+
+test("plugin layout agent is validated in full mode", () => {
+  const files = strip(agentFiles("opt"));
+  files["agents/opt.md"] = agentFile("opt", 125);
+  const r = project(files);
+  assert.equal(r.status, 1);
+  assert.match(r.out, /BODY_TOO_LONG/);
+});
+
+test("valid plugin layout agent passes in full mode", () => {
+  const r = project(strip(agentFiles("opt")));
+  assert.equal(r.status, 0, r.out);
+});
+
+test("plugin layout kit without agent is KIT_WITHOUT_AGENT", () => {
+  const files = strip(agentFiles("opt"));
+  delete files["agents/opt.md"];
+  assert.match(project(files).out, /KIT_WITHOUT_AGENT/);
+});
+
+test("project and plugin layouts are separate namespaces", () => {
+  const r = project({ ...agentFiles("a", "same"), ...strip(agentFiles("b", "same")) });
+  assert.equal(r.status, 0, r.out);
+});

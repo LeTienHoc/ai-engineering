@@ -85,15 +85,18 @@ if (firstRulesFile || cases.length > 0) report(firstRulesFile ?? join(root, "eva
 // Regression term list
 for (const f of all.filter((f) => rel(f) === "evaluation/known-terms.md")) report(f, parseKnownTerms(read(f)).issues);
 
-// Generated agents: .claude/agents/<name>.md with a kit in .claude/agent-kit/<name>/ (rules.md, cases/<id>.md).
-// Kept in its own namespace: ids only need to be unique across the agents of this root.
-{
+// Agents with their kits, checked in one layout per call: project layout (`base` = <root>/.claude, files in
+// .claude/agents/ and .claude/agent-kit/) or plugin layout (`base` = <root>, files in agents/ and agent-kit/).
+// Each call is its own namespace: ids only need to be unique across the agents of that layout.
+function checkAgents(base: string, requireAny: boolean): void {
+  const agentBase = base;
+  const where = base === root ? "agents/" : ".claude/agents/";
   const relA = (f: string) => relative(agentBase, f).replace(/\\/g, "/");
   const agentFiles = all.filter((f) => /^agents\/[^/]+\.md$/.test(relA(f)));
   for (const f of all.filter((f) => /^agents\/.+\/.+\.md$/.test(relA(f)))) {
-    report(f, [{ code: "NESTED_AGENT", message: "agent files must sit directly in .claude/agents/; this file was not validated" }]);
+    report(f, [{ code: "NESTED_AGENT", message: `agent files must sit directly in ${where}; this file was not validated` }]);
   }
-  if (agentsOnly && agentFiles.length === 0) {
+  if (requireAny && agentFiles.length === 0) {
     report(join(agentBase, "agents"), [{ code: "NO_AGENTS", message: "--agents found no agent file in .claude/agents/ (or agents/ under a .claude root)" }]);
   }
   const agentNames = new Set(agentFiles.map((f) => basename(f, ".md")));
@@ -136,9 +139,15 @@ for (const f of all.filter((f) => rel(f) === "evaluation/known-terms.md")) repor
   }
   for (const kit of kitNames) {
     if (!agentNames.has(kit)) {
-      report(join(agentBase, "agent-kit", kit), [{ code: "KIT_WITHOUT_AGENT", message: `kit '${kit}' has no .claude/agents/${kit}.md` }]);
+      report(join(agentBase, "agent-kit", kit), [{ code: "KIT_WITHOUT_AGENT", message: `kit '${kit}' has no ${where}${kit}.md` }]);
     }
   }
+}
+if (agentsOnly) {
+  checkAgents(agentBase, true);
+} else {
+  checkAgents(join(root, ".claude"), false);
+  checkAgents(root, false);
 }
 
 // Secret scan: every text file, including .env*, scripts and test fixtures
