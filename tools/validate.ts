@@ -9,7 +9,19 @@ import { checkCases, checkTraceability, findUnparsedRuleHeadings, parseRules, ty
 import { scanSecrets } from "./lib/secrets.ts";
 import { parseKnownTerms } from "./lib/knownterms.ts";
 
-const root = resolve(process.env.VALIDATE_ROOT ?? resolve(fileURLToPath(import.meta.url), "..", ".."));
+// Usage: node tools/validate.ts [--agents] [path]. The root is the path argument, else VALIDATE_ROOT,
+// else this repo. Unknown options and extra paths are usage errors (exit 2) so nothing is silently ignored.
+const KNOWN_FLAGS = new Set(["--agents"]);
+function usageError(message: string): never {
+  console.error(`validate: ${message}\nusage: node tools/validate.ts [--agents] [path]`);
+  process.exit(2);
+}
+const cliArgs = process.argv.slice(2);
+for (const a of cliArgs) if (a.startsWith("-") && !KNOWN_FLAGS.has(a)) usageError(`unknown option '${a}'`);
+const paths = cliArgs.filter((a) => !a.startsWith("-"));
+if (paths.length > 1) usageError(`expected at most one path, got ${paths.length}`);
+if (paths[0] !== undefined && !existsSync(paths[0])) usageError(`path '${paths[0]}' does not exist`);
+const root = resolve(paths[0] ?? process.env.VALIDATE_ROOT ?? resolve(fileURLToPath(import.meta.url), "..", ".."));
 const SKIP_DIRS = new Set([".git", "node_modules", ".superpowers"]);
 const BINARY = /\.(png|jpe?g|gif|ico|webp|pdf|zip|gz|woff2?|ttf|eot|mp4|mov)$/i;
 const MAX_SCAN_BYTES = 2 * 1024 * 1024;

@@ -35,10 +35,9 @@ Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans
 - **Nói thẳng:** subagent không miễn phí, mỗi agent tiêu token riêng. Tiết kiệm đến từ prompt ngắn, model nhỏ cho việc đơn giản và công cụ giới hạn. `tools` là giới hạn cứng; giới hạn "chỉ đụng file nào" là chỉ dẫn mềm.
 - **Kiểm tra một dự án:**
   ```
-  $env:VALIDATE_ROOT = "D:\duong-dan\du-an"
-  node D:\DuAn\ai-enginner\tools\validate.ts --agents
+  node D:\DuAn\ai-enginner\tools\validate.ts --agents "D:\duong-dan\du-an"
   ```
-  `--agents` chỉ kiểm tra agent sinh ra (và quét secret trong chính các file đó), nên file khác của dự án không làm fail. Với bố cục dùng chung, đặt `VALIDATE_ROOT` là `~/.claude`.
+  `--agents` chỉ kiểm tra agent sinh ra (và quét secret trong chính các file đó), nên file khác của dự án không làm fail. Với bố cục dùng chung, truyền đường dẫn `~/.claude`. Biến `VALIDATE_ROOT` vẫn dùng được; nếu có cả hai thì đường dẫn tham số được ưu tiên. Tùy chọn lạ (ví dụ gõ nhầm `--agent`), đường dẫn thứ hai hoặc đường dẫn không tồn tại sẽ báo lỗi (mã thoát 2), không bị lờ đi.
 
 ## Cài một lần, dùng mọi dự án
 Yêu cầu: Claude Code, Node 22.18+ (đã kiểm tra với Node 26).

@@ -61,8 +61,7 @@ Chấm bằng `evaluation/rubric.md`. Với case `builder-no-write-before-approv
 Kiểm tra dự án thử bằng validator của repo này:
 
 ```
-$env:VALIDATE_ROOT = "D:\tmp\builder-sandbox"
-node D:\DuAn\ai-enginner\tools\validate.ts --agents
+node D:\DuAn\ai-enginner\tools\validate.ts --agents "D:\tmp\builder-sandbox"
 ```
 
 Kết quả phải là `validate: OK`; ghi kết quả vào `evaluation/results/` theo mẫu ở trên.

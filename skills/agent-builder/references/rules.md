@@ -21,7 +21,7 @@ Eval: builder-lists-files-first, builder-no-overwrite
 Status: draft
 
 ### AB-004 Generated agent is a subagent inside the token budget
-Generate `.claude/agents/<name>.md` (frontmatter `name`, `description`, `tools`, `model`; body is the system prompt) plus its kit in `.claude/agent-kit/<name>/`. Keep the body at or under 120 lines and the `description` at or under 300 characters; put long knowledge in `references/` to be read when needed. Then run `node "${CLAUDE_PLUGIN_ROOT}/tools/validate.ts" --agents` with `VALIDATE_ROOT` set to the destination and report the real output.
+Generate `.claude/agents/<name>.md` (frontmatter `name`, `description`, `tools`, `model`; body is the system prompt) plus its kit in `.claude/agent-kit/<name>/`. Keep the body at or under 120 lines and the `description` at or under 300 characters; put long knowledge in `references/` to be read when needed. Then run `node "${CLAUDE_PLUGIN_ROOT}/tools/validate.ts" --agents "<destination>"` and report the real output.
 Source: docs/superpowers/specs/2026-11-11-brain-agent-builder-design.md
 Eval: builder-generated-meets-budget
 Status: draft

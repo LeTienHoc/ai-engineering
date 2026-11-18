@@ -147,3 +147,46 @@ test("an agent file in a subfolder of .claude/agents is reported, not skipped", 
   assert.equal(r.status, 1);
   assert.match(r.out, /NESTED_AGENT/);
 });
+
+/** Writes `files` to a temp dir and runs the validator with `args`, with VALIDATE_ROOT set to `envRoot` (or unset). */
+function runWith(files: Record<string, string>, args: (dir: string) => string[], envRoot?: string) {
+  const dir = mkdtempSync(join(tmpdir(), "agentkit-"));
+  for (const [rel, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(dir, rel)), { recursive: true });
+    writeFileSync(join(dir, rel), text);
+  }
+  const env = { ...process.env };
+  delete env.VALIDATE_ROOT;
+  if (envRoot !== undefined) env.VALIDATE_ROOT = envRoot;
+  const r = spawnSync(process.execPath, [validate, ...args(dir)], { env, encoding: "utf8" });
+  return { status: r.status, out: (r.stdout ?? "") + (r.stderr ?? "") };
+}
+
+test("--agents takes the target path as an argument", () => {
+  const r = runWith(agentFiles("opt"), (dir) => ["--agents", dir]);
+  assert.equal(r.status, 0, r.out);
+  const bad = agentFiles("opt");
+  bad[".claude/agents/opt.md"] = agentFile("opt", 125);
+  assert.match(runWith(bad, (dir) => [dir, "--agents"]).out, /BODY_TOO_LONG/);
+});
+
+test("a path argument wins over VALIDATE_ROOT", () => {
+  const empty = mkdtempSync(join(tmpdir(), "agentkit-empty-"));
+  const r = runWith(agentFiles("opt"), (dir) => ["--agents", dir], empty);
+  assert.equal(r.status, 0, r.out);
+});
+
+test("a path argument that does not exist fails clearly", () => {
+  const r = runWith({}, (dir) => ["--agents", join(dir, "nope")]);
+  assert.equal(r.status, 2);
+  assert.match(r.out, /does not exist/);
+});
+
+test("an unknown flag or a second path fails instead of being ignored", () => {
+  const flag = runWith(agentFiles("opt"), (dir) => ["--agent", dir]);
+  assert.equal(flag.status, 2);
+  assert.match(flag.out, /unknown option '--agent'/);
+  const two = runWith(agentFiles("opt"), (dir) => ["--agents", dir, dir]);
+  assert.equal(two.status, 2);
+  assert.match(two.out, /one path/);
+});
