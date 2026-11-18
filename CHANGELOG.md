@@ -2,7 +2,7 @@
 
 ## 0.5.0 - (chưa phát hành)
 - Bộ não bản 2, skill `verify-pair`: tách kết quả của agent thành khẳng định, đề xuất lệnh kiểm chứng có sẵn trong dự án, chủ sở hữu duyệt danh sách một lần, chạy đúng lệnh đã duyệt, `output-critic` phản biện với output thật, báo bảng ✅ đã kiểm / ❌ sai / ⚠ chưa kiểm (✅ chỉ khi có output lệnh thật; critic chỉ được hạ). Quy tắc VP-001..VP-007 (draft) và 10 eval case `vp-*` (chưa chạy).
-- Công cụ `tools/check-agent.ts` (agent làm việc phải chỉ đề xuất: không `Edit`, `Write`, `NotebookEdit`, `Bash`, `PowerShell`, `Agent`, và phải khai báo `tools`) và `tools/check-script.ts` (chặn script có `--fix`, `-u`, xoá, cài gói, migrate, deploy, push, mạng, ghi file bằng `>`; xét cả hook `pre`/`post` và script gọi lồng).
+- Công cụ `tools/check-agent.ts` (agent làm việc phải chỉ đề xuất: phải khai báo `tools` và chỉ gồm công cụ chỉ đọc đã biết `Read`, `Grep`, `Glob`, `WebFetch`, `WebSearch`, `TodoWrite`; mọi công cụ khác, kể cả `Bash(...)`, `Agent`, `Task`, MCP, `*`, đều bị chặn) và `tools/check-script.ts` (chặn script có `--fix`, cập nhật snapshot, `--write`, xoá, cài gói, git làm đổi cây thư mục, `sed -i`/`cp`/`mv`/…, chạy file script không đọc được, migrate, deploy, push, mạng, ghi file bằng `>`; xét cả hook `pre`/`post`, `npm test`/`start`, `run-s`/`npm-run-all`/`concurrently` và script gọi lồng tối đa 5 tầng; gọi không xác định được thì chặn; "OK" chỉ nghĩa là không thấy mẫu ghi đã biết).
 - `output-critic` chuyển vào plugin (`agents/`, `agent-kit/`), quy tắc OC-001..OC-006 ghi thẳng trong thân agent; validator kiểm cả agent theo bố cục plugin.
 
 ## 0.4.0 - 2026-11-18

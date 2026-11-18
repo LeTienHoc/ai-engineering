@@ -112,3 +112,61 @@ test("check-script CLI prints OK or BLOCKED with exit 0 or 1", () => {
 test("check-agent CLI without arguments is a usage error", () => {
   assert.equal(run("check-agent.ts", []).status, 2);
 });
+
+// Final review fixes
+test("only known read-only tools pass; anything else is an unknown tool", () => {
+  for (const line of ["tools: Read, Bash(git:*)", "tools: Read, Agent(worker)", "tools: Read, Task", "tools: Read, MultiEdit", "tools: Read, mcp__x__write_file", "tools: '*'", "tools: Read Edit"]) {
+    const r = checkAgentProposalOnly(agent(line));
+    assert.equal(r.ok, false, line);
+  }
+  assert.equal(checkAgentProposalOnly(agent("tools: Read, Grep, Glob, WebFetch, WebSearch, TodoWrite")).ok, true);
+  assert.match(checkAgentProposalOnly(agent("tools: Read, MultiEdit")).reason, /MultiEdit/);
+});
+
+test("YAML block list tools are parsed like the comma form", () => {
+  const block = "---\nname: w\ndescription: \"worker\"\ntools:\n  - Read\n  - Grep\nmodel: haiku\n---\n\nbody\n";
+  assert.equal(checkAgentProposalOnly(block).ok, true);
+  assert.equal(checkAgentProposalOnly(block.replace("  - Grep", "  - Write")).ok, false);
+});
+
+test("hitting the nesting limit is not OK", () => {
+  const s: Record<string, string> = {};
+  for (let i = 0; i < 6; i++) s[`s${i}`] = `npm run s${i + 1}`;
+  s.s6 = "echo deep";
+  const r = checkScript(pkg(s), "s0");
+  assert.equal(r.ok, false);
+  assert.match(r.reason, /deeper/);
+});
+
+test("npm shortcuts, flags and script runners are followed", () => {
+  const bad = { lint: "eslint --fix .", test: "jest -u", start: "rimraf dist" };
+  for (const body of ["npm test", "npm t", "npm start", "npm run -s lint", "npm run --silent lint", "run-s lint", "npm-run-all lint", "run-p lint:*", "concurrently \"npm:lint\"", "concurrently \"npm run lint\""]) {
+    const scripts: Record<string, string> = { ...bad, "lint:js": "eslint --fix .", x: body };
+    assert.equal(checkScript(pkg(scripts), "x").ok, false, body);
+  }
+});
+
+test("a package-manager call that cannot be resolved is blocked", () => {
+  const r = checkScript(pkg({ x: "pnpm --filter web lint", lint: "eslint ." }), "x");
+  assert.equal(r.ok, false);
+  assert.match(r.reason, /resolve/);
+});
+
+test("more write commands are blocked", () => {
+  for (const body of ["prettier --write .", "prettier -w .", "biome check --write", "biome check --apply", "vitest run --update", "jest --updateSnapshot=true", "playwright test --update-snapshots", "git checkout .", "git reset --hard", "git clean -fdx", "git commit -m x", "git stash", "sed -i s/a/b/ f", "cp a b", "mv a b", "tee out", "touch f", "mkdir d", "node scripts/gen.js", "npx playwright install"]) {
+    assert.equal(checkScript(pkg({ x: body }), "x").ok, false, body);
+  }
+});
+
+test("tsc without --noEmit is flagged as build output, with --noEmit it is a plain check", () => {
+  const emit = checkScript(pkg({ x: "tsc -b" }), "x");
+  assert.equal(emit.ok, true);
+  assert.equal(emit.buildOutput, true);
+  const check = checkScript(pkg({ x: "tsc --noEmit" }), "x");
+  assert.equal(check.ok, true);
+  assert.equal(check.buildOutput, false);
+});
+
+test("OK wording does not overclaim", () => {
+  assert.match(checkScript(pkg({ test: "vitest run" }), "test").reason, /no known write pattern/);
+});

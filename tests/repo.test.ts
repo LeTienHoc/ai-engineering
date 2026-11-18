@@ -145,3 +145,9 @@ test("every verify-pair rule has at least one vp-* eval case", () => {
     assert.match(/^Eval:\s*(.*)$/m.exec(b)?.[1] ?? "", /\bvp-[a-z-]+/, `${b.slice(0, 6)} needs a vp-* eval case`);
   }
 });
+
+test("verify-pair checks every package-manager script call, including npm test", () => {
+  const text = read("skills/verify-pair/SKILL.md");
+  assert.ok(text.includes("any package-manager command that runs a script"), "constraint must cover npm test / npm start / yarn x");
+  assert.match(text, /npm test.*check-script\.ts/s, "the npm test example must run check-script.ts first");
+});
