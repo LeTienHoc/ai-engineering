@@ -6,6 +6,8 @@ Plugin Claude Code cá nhân để xây các AI agent nhất quán, kiểm chứ
 - **Term feedback** (`/ai-engineering:term-feedback`): khi bạn hỏi nghĩa một từ ("Promise là gì?"), agent giải thích bằng lời thường và ghi từ đó vào sổ từ lạ. Từ riêng của dự án (tên hàm, đường dẫn) được giải thích nhưng **không** ghi vào sổ.
 - **Quality report** (`/ai-engineering:quality-report`): báo cáo chỉ đọc: agent nào làm bạn khó hiểu nhiều nhất, từ nào lặp lại, eval case nào chưa chạy hoặc chỉ đạt không chính thức. Thiếu dữ liệu thì nói rõ, không bao giờ báo "ổn" khi chưa có dữ liệu.
 - **Agent builder** (`/ai-engineering:agent-builder`), "bộ não" bản 1: bạn mô tả agent cần tạo; nó hỏi phần còn thiếu, đề xuất thiết kế, **chỉ ghi file sau khi bạn duyệt** và sau khi liệt kê danh sách file. Nếu bạn chưa biết cần agent nào, nó đưa danh sách để bạn chọn.
+- **Verify pair** (`/ai-engineering:verify-pair`), "bộ não" bản 2: để biết kết quả của một agent **có thật sự đúng không** bằng bằng chứng, không phải bằng lời AI. Nó tách kết quả thành từng khẳng định, đề xuất lệnh kiểm chứng **có sẵn trong dự án** (test, typecheck, lint không `--fix`, tìm chuỗi, git chỉ đọc), **bạn duyệt cả danh sách một lần** rồi mới chạy, đưa output thật cho `output-critic` phản biện, và trả bảng `✅ đã kiểm` / `❌ sai` / `⚠ chưa kiểm`. ✅ chỉ có khi có output lệnh thật. Hai cách dùng: (a) đưa việc + tên một subagent **chỉ đề xuất** (không có quyền ghi file hay chạy lệnh) để nó làm rồi kiểm; (b) đưa một kết quả có sẵn + yêu cầu gốc (dùng cách này cho kết quả của skill như Frontend Architect, hoặc cho code đã sửa qua `git diff`). Quyết định cuối luôn là của bạn.
+- **Output critic** (agent `output-critic`, đi kèm plugin): phản biện kết quả của agent khác so với yêu cầu gốc và bằng chứng; chỉ đọc, không sửa file.
 
 Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans/` (Phase 1: lõi + Frontend Architect; Phase 2: Tutor; Brain v1: Agent builder)
 
@@ -15,6 +17,8 @@ Thiết kế: `docs/superpowers/specs/` · Kế hoạch: `docs/superpowers/plans
 - `evaluation/`: eval case, rubric, hướng dẫn chạy (`RUN.md`), kết quả (`results/`).
 - `governance/`: chính sách quyền hạn/secret/chống injection, quy trình phiên bản.
 - `examples/code-optimizer/`: agent mẫu do builder tạo (chỉ đọc, gợi ý tối ưu code).
+- `agents/`, `agent-kit/`: agent đi kèm plugin (`output-critic`) và bộ quy tắc/eval của nó.
+- `tools/check-agent.ts`, `tools/check-script.ts`: hai bước kiểm tra an toàn của `verify-pair` (agent có đúng "chỉ đề xuất" không; script `package.json` có ghi/xoá/cài/`--fix` không, kể cả hook `pre`/`post` và script gọi lồng).
 - `tools/`, `tests/`: validator TypeScript (chạy bằng Node, không cần cài thư viện).
 
 ## Theo dõi chất lượng (sổ từ lạ)
@@ -68,6 +72,7 @@ Xem `evaluation/RUN.md`. Chạy tay qua Claude Code, không dùng API key.
 - Chỉ phủ Next.js App Router + TypeScript; Pages Router chỉ được phát hiện và cảnh báo.
 - Chưa xác minh: danh sách `tools` của subagent có được ép trong suốt một lượt chạy foreground hay không (tài liệu chỉ nêu rõ cho chạy nền và tiếp tục).
 - Quy tắc `AB-*` của builder đã duyệt (2026-11-18) nhưng 8 eval `builder-*` chưa chạy thật; quy tắc `CO-*` của agent mẫu vẫn `draft` (chủ sở hữu thử trên dự án thật, đạt không chính thức).
+- `verify-pair`: một lần chạy theo cặp tốn khoảng gấp đôi token; bước kiểm script là một danh sách mẫu nên có thể sót lệnh ghi file giấu trong file cấu hình hoặc chương trình; quy tắc `VP-*` còn `draft` và 10 eval `vp-*` chưa chạy; tên đầy đủ của `output-critic` khi gọi qua công cụ Agent (có tiền tố plugin hay không) cần xác nhận sau khi cài lại plugin.
 - Một người dùng; không có marketplace công khai hay dashboard.
 
 ## Báo lỗi / sửa

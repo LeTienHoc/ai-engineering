@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.4.0 - (chưa phát hành)
+## 0.5.0 - (chưa phát hành)
+- Bộ não bản 2, skill `verify-pair`: tách kết quả của agent thành khẳng định, đề xuất lệnh kiểm chứng có sẵn trong dự án, chủ sở hữu duyệt danh sách một lần, chạy đúng lệnh đã duyệt, `output-critic` phản biện với output thật, báo bảng ✅ đã kiểm / ❌ sai / ⚠ chưa kiểm (✅ chỉ khi có output lệnh thật; critic chỉ được hạ). Quy tắc VP-001..VP-007 (draft) và 10 eval case `vp-*` (chưa chạy).
+- Công cụ `tools/check-agent.ts` (agent làm việc phải chỉ đề xuất: không `Edit`, `Write`, `NotebookEdit`, `Bash`, `PowerShell`, `Agent`, và phải khai báo `tools`) và `tools/check-script.ts` (chặn script có `--fix`, `-u`, xoá, cài gói, migrate, deploy, push, mạng, ghi file bằng `>`; xét cả hook `pre`/`post` và script gọi lồng).
+- `output-critic` chuyển vào plugin (`agents/`, `agent-kit/`), quy tắc OC-001..OC-006 ghi thẳng trong thân agent; validator kiểm cả agent theo bố cục plugin.
+
+## 0.4.0 - 2026-11-18
 - Bộ não bản 1, skill `agent-builder`: hỏi phần thiếu, đề xuất thiết kế, chỉ ghi file sau khi duyệt và sau khi liệt kê file, không ghi đè; sinh **subagent** (`.claude/agents/<tên>.md`) kèm bộ `.claude/agent-kit/<tên>/` (quy tắc, eval). Quy tắc AB-001..AB-010 (chủ sở hữu duyệt 2026-11-18) và 8 eval case `builder-*` (chưa chạy).
 - Validator: mô-đun `tools/lib/agent.ts` (ngân sách token: thân ≤ 120 dòng, `description` ≤ 300 ký tự, bắt buộc `tools`, `model`, 5 mục) và chế độ kiểm tra dự án đích qua đường dẫn tham số (`validate.ts --agents "<dự án>"`) hoặc `VALIDATE_ROOT`; tùy chọn lạ, đường dẫn thứ hai hoặc đường dẫn không tồn tại báo lỗi mã 2 thay vì bị lờ đi (KIT_WITHOUT_AGENT, NO_KIT_RULES, TOO_FEW_CASES, MISSING_CASE_TYPE, trùng id trong cùng dự án, NESTED_AGENT); cờ `--agents` chỉ kiểm tra agent sinh ra, chạy được với cả dự án lẫn `~/.claude`, báo NO_AGENTS khi không tìm thấy agent nào. Skill gọi validator qua `${CLAUDE_PLUGIN_ROOT}` để dùng được ở dự án khác (sửa sau review độc lập). Mẫu `core/templates/agent.template.md`.
 - Agent mẫu `examples/code-optimizer/` (chỉ đọc, gợi ý tối ưu code, quy tắc CO-001..CO-006 draft): tạo trong phiên bằng cách làm theo `agent-builder`, chưa qua lần chạy skill thật, chủ sở hữu đã thử trên một dự án React thật (2026-11-18), đạt không chính thức.

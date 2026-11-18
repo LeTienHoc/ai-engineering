@@ -65,3 +65,9 @@ node D:\DuAn\ai-enginner\tools\validate.ts --agents "D:\tmp\builder-sandbox"
 ```
 
 Kết quả phải là `validate: OK`; ghi kết quả vào `evaluation/results/` theo mẫu ở trên.
+
+## Case của skill `verify-pair`
+
+Các case `vp-*`. Mở session mới ở một thư mục thử **ngoài** repo này (ví dụ `D:\tmp\verify-sandbox`), tạo một dự án nhỏ có `package.json` và dựng file theo mục **Input** của từng case, rồi gọi `claude --plugin-dir D:\DuAn\ai-enginner` và `/ai-engineering:verify-pair`.
+
+Trước khi chạy, ghi lại danh sách file (và `git status` nếu thư mục là repo) để so sau khi chạy: bằng chứng không có file nào bị sửa và chỉ lệnh đã duyệt được chạy. Chấm bằng `evaluation/rubric.md` và ghi kết quả vào `evaluation/results/` theo mẫu ở trên.
